@@ -4,7 +4,7 @@ Boilerplate personnel. Les conventions générales sont dans `~/.claude/CLAUDE.m
 
 ## Choix du projet
 
-- **Développement en conteneur** (section 18 de la spec commune) : seuls prérequis Docker avec Compose, `make` et git. Les cibles `make` passent par `docker compose run --rm node` (variable `RUN`). Le service `node` (profil `dev`, `Dockerfile.dev`) part de l'image officielle `mcr.microsoft.com/playwright:v<version>-noble`, qui fournit Node 24, Yarn 1, git et Chromium : la même image sert au dev, à la QA, à Playwright et à Lighthouse CI, et un seul volume `node_modules` suffit. La version vient de `package.json`, lue par le `Makefile` : `@playwright/test` est donc épinglé sans `^`. UID et GID de la machine passés par le `Makefile`. Le hook `pre-commit` appelle `make lint-staged` et échoue avec un message clair sans Docker. La CI appelle les mêmes cibles. Le service `web` (image de production) reste sans profil : `docker compose up` ne démarre que lui.
+- **Développement en conteneur** (section 18 de la spec commune) : seuls prérequis Docker avec Compose, `make` et git. Les cibles `make` passent par `docker compose run --rm node` (variable `RUN`). Le service `node` (profil `dev`, `Dockerfile.dev`) part de l'image officielle `mcr.microsoft.com/playwright:v<version>-noble`, qui fournit Node 26, Yarn 1, git et Chromium (l’image de production `Dockerfile` suit la même version majeure) : la même image sert au dev, à la QA, à Playwright et à Lighthouse CI, et un seul volume `node_modules` suffit. La version vient de `package.json`, lue par le `Makefile` : `@playwright/test` est donc épinglé sans `^`. UID et GID de la machine passés par le `Makefile`. Le hook `pre-commit` appelle `make lint-staged` et échoue avec un message clair sans Docker. La CI appelle les mêmes cibles. Le service `web` (image de production) reste sans profil : `docker compose up` ne démarre que lui.
 - **Type** : application SvelteKit 3, rendu serveur, `adapter-node`. Configuration dans `vite.config.ts` (SvelteKit 3 ne lit plus `svelte.config.js`).
 - **Architecture** : quatre racines, `src/routes/` (routage), `src/lib/views/` (pages sans métier ou qui composent des modules), `src/lib/modules/` (`catalog` en forme complète, `blog`, `contact`, `content`, `task` en forme réduite sans `application/`), `src/lib/shared/` (socle). Référence des cinq fronts pour le document d'architecture commun (D1 à D12).
 - **Routage** : `src/routes/` ne contient que du câblage (`load`, `actions`, rendu d'une vue). Le serveur passe par `modules/<x>/index.server.ts`, le client par `modules/<x>/index.ts`.
@@ -40,7 +40,7 @@ Boilerplate personnel. Les conventions générales sont dans `~/.claude/CLAUDE.m
 | Paquet                    | Version | Raison                                                                         |
 | ------------------------- | ------- | ------------------------------------------------------------------------------ |
 | `typescript`              | `~6.0`  | typescript-eslint 8 (`<6.1`), svelte-check 4 et SvelteKit 3 (`^6.0.0`) en peer |
-| `@types/node`             | `^24`   | aligné sur la version de Node visée                                            |
+| `@types/node`             | `^26`   | aligné sur la version de Node visée                                            |
 | `@testing-library/dom`    | `^10`   | peer de `@testing-library/jest-dom` et `user-event`                            |
 | `embla-carousel(-svelte)` | `^8.6`  | la 9 n'existe qu'en release candidate                                          |
 
