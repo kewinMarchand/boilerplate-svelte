@@ -40,7 +40,6 @@ Boilerplate personnel. Les conventions générales sont dans `~/.claude/CLAUDE.m
 | Paquet                    | Version | Raison                                                                         |
 | ------------------------- | ------- | ------------------------------------------------------------------------------ |
 | `typescript`              | `~6.0`  | typescript-eslint 8 (`<6.1`), svelte-check 4 et SvelteKit 3 (`^6.0.0`) en peer |
-| `jsdom`                   | `^29`   | jsdom 30 exige Node ≥ 24.15, le projet vise 24.14                              |
 | `@types/node`             | `^24`   | aligné sur la version de Node visée                                            |
 | `@testing-library/dom`    | `^10`   | peer de `@testing-library/jest-dom` et `user-event`                            |
 | `embla-carousel(-svelte)` | `^8.6`  | la 9 n'existe qu'en release candidate                                          |
