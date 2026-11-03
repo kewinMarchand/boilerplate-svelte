@@ -33,7 +33,7 @@
     "@iconify-json/lucide": "^1.2.143",
     "@kewinmarchand/boilerplates-ui": "github:kewinMarchand/boilerplates-ui#v0.11.1",
     "@kewinmarchand/csp": "github:kewinMarchand/csp#v0.1.1",
-    "@lhci/cli": "^0.15.1",
+    "@lhci/cli": "^0.16.0",
     "@playwright/test": "1.64.1",
     "@sentry/sveltekit": "^11.6.0",
     "@sveltejs/adapter-node": "^6.0.0",
