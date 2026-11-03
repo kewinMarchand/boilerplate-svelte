@@ -4,14 +4,14 @@ Point de départ pour une application **SvelteKit 3** (Svelte 5, runes) avec **T
 
 Les pages de démonstration montrent chaque brique en situation :
 
-| Page                                 | Ce qu'elle montre                                                                                                         |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
-| `/`                                  | Hero plein écran (image LCP préchargée), carrousel Embla, articles rendus côté serveur avec leurs trois états             |
-| `/taches`                            | Chargement côté client avec TanStack Query : chargement, erreur avec relance, liste vide                                  |
-| `/contact`                           | Formulaire superforms + zod, action serveur, erreurs liées aux champs, fonctionne sans JavaScript                         |
-| `/catalogue/...`                     | Catalogue à facettes : état dans l'URL, comptage disjonctif, tri, pagination, vue grille ou liste, formulaire GET sans JS |
-| Pages légales                        | Mentions légales, données personnelles, déclaration d'accessibilité calculée depuis la config, plan du site               |
-| `/charte-graphique` (dev uniquement) | Tokens, typographie, composants et états, avec ratios de contraste calculés                                               |
+| Page                                 | Ce qu'elle montre                                                                                                                      |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                                  | Hero plein écran (image LCP préchargée), carrousel Embla lu dans l'API, articles rendus côté serveur avec leurs trois états            |
+| `/taches`                            | Chargement côté client avec TanStack Query : chargement, erreur avec relance, liste vide                                               |
+| `/contact`                           | Formulaire superforms + zod, action serveur, erreurs liées aux champs, fonctionne sans JavaScript                                      |
+| `/catalogue/...`                     | Catalogue à facettes : état dans l'URL, comptage disjonctif, tri, pagination, vue grille ou liste, formulaire GET sans JS              |
+| Pages légales                        | Mentions légales, données personnelles, déclaration d'accessibilité lues dans l'API (texte administré dans son `/admin`), plan du site |
+| `/charte-graphique` (dev uniquement) | Tokens, typographie, composants et états, avec ratios de contraste calculés                                                            |
 
 S'y ajoutent : menu de catégories en cascade (desktop) et en niveaux (mobile), fil d'Ariane et JSON-LD, métadonnées SEO rendues côté serveur, mode accessibilité renforcée, pages d'erreur 404, 500 et 503.
 
@@ -110,12 +110,12 @@ git cherry-pick <sha>
 | Sujet                      | Fichiers                                                                                                                                                                                                                                                          |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Nom du paquet              | `package.json` (`name`, `description`)                                                                                                                                                                                                                            |
-| Identité et config du site | `src/lib/shared/config/site.ts` (nom, description, éditeur, hébergeur, audit d'accessibilité), `.env.example` (`PUBLIC_SITE_URL`), `static/manifest.webmanifest`, `src/app.html` (`theme-color`), `LICENSE`                                                       |
+| Identité et config du site | `src/lib/shared/config/site.ts` (nom, description, éditeur pour le SEO, audit d'accessibilité pour le lien du pied de page), `.env.example` (`PUBLIC_SITE_URL`), `static/manifest.webmanifest`, `src/app.html` (`theme-color`), `LICENSE`                         |
 | Navigation                 | `src/lib/shared/config/navigation.ts` (menu, pied de page, sitemap, plan du site)                                                                                                                                                                                 |
 | Couleurs, police, tokens   | `src/lib/shared/theme/theme.css`                                                                                                                                                                                                                                  |
 | Ports                      | développement : `package.json` (script `dev`) et `vite.config.ts` (5173). Tests : `playwright.config.ts` (3120), `tests/e2e/production.e2e.ts` (3121). Lighthouse : `.lighthouserc.json` (3220). Production : `Dockerfile`, `compose.yaml`, `.env.example` (3000) |
 | Logo et favicons           | `static/logo-mark.svg`, `static/favicon.svg`, `static/favicon.ico`, `static/apple-touch-icon.png`, `static/icon-192.png`, `static/icon-512.png`, `static/og-image.jpg`                                                                                            |
-| Pages légales              | `src/lib/views/legal/` (textes), alimentées par `site.ts`                                                                                                                                                                                                         |
+| Pages légales              | texte et carrousel de l'accueil dans l'admin de l'API Platform (`/admin`), lus par le module `content` (`GET /api/legal_pages/{slug}`, `GET /api/slides`). `src/lib/views/legal/` garde la mesure d'audience (Matomo) et le plan du site                          |
 | URL Lighthouse             | `.lighthouserc.json` (`collect.url`)                                                                                                                                                                                                                              |
 | Intégration continue       | `.github/workflows/ci.yml`                                                                                                                                                                                                                                        |
 | Documentation              | `README.md`, `CLAUDE.md`                                                                                                                                                                                                                                          |
@@ -181,7 +181,7 @@ src/
         ui/               composants, hooks en runes (*.svelte.ts), vue rendue par la route
         index.ts          seul export public côté client
         index.server.ts   seul export public côté serveur (load, actions)
-      blog/, contact/, task/   forme réduite : domain/, infrastructure/, ui/, sans application/
+      blog/, contact/, content/, task/   forme réduite : domain/, infrastructure/, ui/, sans application/
     shared/               socle sans métier : config, thème, SEO, routage, providers, erreurs,
                           ui/ (kit, layout, carousel, a11y-mode, hooks), api/ (client typé, types générés)
 tests/

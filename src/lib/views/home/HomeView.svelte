@@ -1,22 +1,21 @@
 <script lang="ts">
   import { SITE } from '#lib/shared/config'
   import { buildHomeJsonLd, buildPageMeta, SeoHead } from '#lib/shared/seo'
-  import { ImageCarousel } from '#lib/shared/ui/carousel'
 
   import { BlogSection } from '#lib/modules/blog'
+  import { FeaturedCarousel } from '#lib/modules/content'
 
-  import { HOME_SLIDES } from './featuredSlides'
   import Hero from './Hero.svelte'
 
   import type { Article } from '#lib/modules/blog'
+  import type { Slide } from '#lib/modules/content'
 
   interface Props {
     blog: Article.Blog
+    slides: Slide.Featured
   }
 
-  const { blog }: Props = $props()
-
-  const carouselTitleId = $props.id()
+  const { blog, slides }: Props = $props()
 </script>
 
 <SeoHead
@@ -25,9 +24,6 @@
 
 <Hero />
 
-<section aria-labelledby={carouselTitleId} data-testid="home-carousel">
-  <h2 id={carouselTitleId} class="section-title">À la une</h2>
-  <ImageCarousel slides={HOME_SLIDES} label="À la une" />
-</section>
+<FeaturedCarousel {slides} />
 
 <BlogSection {blog} />

@@ -1,65 +1,42 @@
 <script lang="ts">
-  import { SITE } from '#lib/shared/config'
   import { isAudienceMeasurementEnabled } from '#lib/shared/observability'
-  import { PageHeader } from '#lib/shared/ui/layout'
+
+  import { LegalPageContent } from '#lib/modules/content'
 
   import OppositionMesure from './OppositionMesure.svelte'
 
-  const { publisher } = SITE
+  import type { LegalPage } from '#lib/modules/content'
+
+  interface Props {
+    legalPage: LegalPage.Content
+  }
+
+  const { legalPage }: Props = $props()
 </script>
 
-<PageHeader
-  title="Données personnelles"
+<LegalPageContent
+  {legalPage}
+  fallbackTitle="Données personnelles"
   description="Traitement des données personnelles collectées par le formulaire de contact : finalité, base légale, durée de conservation et droits."
 />
 
-<div class="prose-legal">
-  <h2>Responsable de traitement</h2>
-  <p>{publisher.name}, {publisher.address}.</p>
-
-  <h2>Finalité</h2>
-  <p>
-    Les données saisies dans le formulaire de contact (nom, adresse e-mail, message) servent
-    uniquement à répondre à votre demande.
-  </p>
-
-  <h2>Base légale</h2>
-  <p>Le traitement repose sur votre consentement, exprimé par l’envoi volontaire du formulaire.</p>
-
-  <h2>Durée de conservation</h2>
-  <p>Les messages sont conservés trois ans à compter du dernier échange, puis supprimés.</p>
-
-  <h2>Vos droits</h2>
-  <p>Vous disposez des droits suivants sur vos données :</p>
-  <ul>
-    <li>droit d’accès ;</li>
-    <li>droit de rectification ;</li>
-    <li>droit à l’effacement ;</li>
-    <li>droit d’opposition.</li>
-  </ul>
-  <p>
-    Pour les exercer, écrivez à <a href={`mailto:${publisher.email}`}>{publisher.email}</a>. Si vous
-    estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la
-    <a href="https://www.cnil.fr/fr/plaintes">CNIL</a>.
-  </p>
-
-  <h2>Cookies</h2>
-  <p>Ce site ne dépose aucun cookie de mesure d’audience.</p>
-
-  {#if isAudienceMeasurementEnabled}
-    <section aria-labelledby="mesure-audience" data-testid="legal-audience-measurement">
-      <h2 id="mesure-audience">Mesure d’audience</h2>
-      <p>
-        La fréquentation du site est mesurée avec Matomo, hébergé par l’éditeur, configuré sans
-        cookie et sans identifiant : aucun suivi d’un site à l’autre, aucune donnée transmise à un
-        tiers. Les statistiques produites sont anonymes et servent uniquement à améliorer le site.
-        Les données brutes sont conservées 25 mois au plus.
-      </p>
-      <p>
-        Vous pouvez vous opposer à cette mesure : votre choix est gardé dans ce navigateur, sans
-        cookie.
-      </p>
-      <OppositionMesure />
-    </section>
-  {/if}
-</div>
+{#if isAudienceMeasurementEnabled}
+  <section
+    aria-labelledby="mesure-audience"
+    class="prose-legal mt-4"
+    data-testid="legal-audience-measurement"
+  >
+    <h2 id="mesure-audience">Mesure d’audience</h2>
+    <p>
+      La fréquentation du site est mesurée avec Matomo, hébergé par l’éditeur, configuré sans cookie
+      et sans identifiant : aucun suivi d’un site à l’autre, aucune donnée transmise à un tiers. Les
+      statistiques produites sont anonymes et servent uniquement à améliorer le site. Les données
+      brutes sont conservées 25 mois au plus.
+    </p>
+    <p>
+      Vous pouvez vous opposer à cette mesure : votre choix est gardé dans ce navigateur, sans
+      cookie.
+    </p>
+    <OppositionMesure />
+  </section>
+{/if}

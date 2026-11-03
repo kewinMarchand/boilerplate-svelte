@@ -161,8 +161,23 @@
       @apply list-disc pl-6;
     }
 
+    & section {
+      @apply flex flex-col gap-4;
+    }
+
+    /* Liens du HTML de l'API, sans classe : rendu de bui-link */
     & a {
-      @apply text-primary underline;
+      @apply text-primary underline decoration-1 underline-offset-[0.2em];
+
+      &:hover {
+        @apply text-primary-dark decoration-2;
+      }
+
+      &:focus-visible {
+        border-radius: 2px;
+        outline: var(--bui-focus-width) solid var(--bui-color-primary);
+        outline-offset: var(--bui-focus-offset);
+      }
     }
   }
 }
