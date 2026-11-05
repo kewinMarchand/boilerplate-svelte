@@ -7,6 +7,12 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --ignore-scripts
 
+# Dépendances de production : @opentelemetry/api, que SvelteKit laisse hors du bundle serveur (une seule instance)
+FROM base AS prod-deps
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --production --frozen-lockfile --ignore-scripts
+
 FROM base AS build
 WORKDIR /app
 ARG ORIGIN=http://localhost:3000
@@ -19,6 +25,7 @@ FROM node:26-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000 HOST=0.0.0.0
 COPY --from=build --chown=node:node /app/package.json ./
+COPY --from=prod-deps --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/build ./build
 USER node
 EXPOSE 3000
