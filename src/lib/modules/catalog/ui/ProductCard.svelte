@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { resolveHref } from '#lib/shared/routing'
   import { Badge, ResponsiveImage } from '#lib/shared/ui/kit'
 
+  import { productHref } from '../domain/catalog'
   import { formatPrice } from '../domain/price'
   import { EXPOSURE_LABELS, SIZE_LABELS } from './labels'
 
@@ -36,7 +38,13 @@
       <div class="product-card-image bg-surface-muted"></div>
     {/if}
     <div class="flex flex-col gap-1 p-4">
-      <h2 class="text-title font-semibold">{product.name}</h2>
+      <h2 class="text-title font-semibold">
+        <a
+          href={resolveHref(productHref(product.slug))}
+          class="bui-link product-card-link"
+          data-testid="catalog-product-link">{product.name}</a
+        >
+      </h2>
       <p class="font-semibold" data-testid="catalog-product-price">{formatPrice(product.price)}</p>
       <p class="text-body-sm text-text-muted">
         {EXPOSURE_LABELS[product.exposure]} · Taille {SIZE_LABELS[product.size].toLowerCase()}
@@ -47,3 +55,16 @@
     </div>
   </div>
 </article>
+
+<style>
+  .product-card {
+    position: relative;
+  }
+
+  /* Lien étiré sur toute la carte : un seul lien, nommé par le nom du produit */
+  .product-card-link::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+  }
+</style>

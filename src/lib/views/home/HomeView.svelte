@@ -3,19 +3,19 @@
   import { buildHomeJsonLd, buildPageMeta, SeoHead } from '#lib/shared/seo'
 
   import { BlogSection } from '#lib/modules/blog'
-  import { FeaturedCarousel } from '#lib/modules/content'
+  import { FeaturedProducts } from '#lib/modules/catalog'
 
   import Hero from './Hero.svelte'
 
   import type { Article } from '#lib/modules/blog'
-  import type { Slide } from '#lib/modules/content'
+  import type { Catalog } from '#lib/modules/catalog'
 
   interface Props {
     blog: Article.Blog
-    slides: Slide.Featured
+    featured: Catalog.Featured
   }
 
-  const { blog, slides }: Props = $props()
+  const { blog, featured }: Props = $props()
 </script>
 
 <SeoHead
@@ -24,6 +24,6 @@
 
 <Hero />
 
-<FeaturedCarousel {slides} />
+<FeaturedProducts {featured} />
 
 <BlogSection {blog} />

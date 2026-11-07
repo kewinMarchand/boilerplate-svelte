@@ -4,4 +4,4 @@
   const { data } = $props()
 </script>
 
-<HomeView blog={data.blog} slides={data.slides} />
+<HomeView blog={data.blog} featured={data.featured} />
