@@ -13,7 +13,8 @@
         "http://localhost:3220/mentions-legales",
         "http://localhost:3220/donnees-personnelles",
         "http://localhost:3220/accessibilite",
-        "http://localhost:3220/plan-du-site"
+        "http://localhost:3220/plan-du-site",
+        "http://localhost:3220/blog/le-mode-accessibilite-renforcee"
       ],
       "numberOfRuns": 3,
       "settings": {

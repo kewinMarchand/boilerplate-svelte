@@ -24,7 +24,10 @@
   {#if meta.next}
     <link rel="next" href={meta.next} />
   {/if}
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content={meta.ogType} />
+  {#if meta.publishedTime}
+    <meta property="article:published_time" content={meta.publishedTime} />
+  {/if}
   <meta property="og:site_name" content={meta.siteName} />
   <meta property="og:title" content={meta.ogTitle} />
   <meta property="og:description" content={meta.description} />

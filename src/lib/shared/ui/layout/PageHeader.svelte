@@ -13,9 +13,10 @@
     description: string
     parents?: Seo.BreadcrumbItem[]
     seo?: Omit<Seo.Input, 'title' | 'description' | 'path' | 'breadcrumb'>
+    titleTestId?: string
   }
 
-  const { title, description, parents = [], seo = {} }: Props = $props()
+  const { title, description, parents = [], seo = {}, titleTestId }: Props = $props()
 
   const path = $derived(toAppPath(page.url.pathname))
   const breadcrumb = $derived(buildBreadcrumb({ label: title, path }, parents))
@@ -24,4 +25,4 @@
 
 <SeoHead {meta} />
 <Breadcrumb items={breadcrumb} />
-<h1 id="page-title" tabindex="-1" class="heading-1">{title}</h1>
+<h1 id="page-title" tabindex="-1" class="heading-1" data-testid={titleTestId}>{title}</h1>
