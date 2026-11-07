@@ -1,7 +1,9 @@
+import type { ImageView } from '#lib/shared/ui/kit'
+
 export declare namespace Slide {
   interface Entity {
     id: string
-    imageBasePath: string
+    image: ImageView | null
     title: string
     text: string
   }

@@ -6,8 +6,8 @@ import FeaturedCarousel from './FeaturedCarousel.svelte'
 vi.mock('embla-carousel-svelte', () => ({ default: () => {} }))
 
 const SLIDES = [
-  { id: 'heliconia', imageBasePath: '/images/slide-1', title: 'Heliconia', text: 'Rouge.' },
-  { id: 'anthurium', imageBasePath: '/images/slide-2', title: 'Anthurium', text: 'Vernissé.' },
+  { id: 'heliconia', image: null, title: 'Heliconia', text: 'Rouge.' },
+  { id: 'anthurium', image: null, title: 'Anthurium', text: 'Vernissé.' },
 ]
 
 describe('FeaturedCarousel', () => {

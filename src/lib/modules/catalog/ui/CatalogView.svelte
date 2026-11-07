@@ -3,7 +3,7 @@
   import { resolveHref } from '#lib/shared/routing'
   import { absoluteUrl } from '#lib/shared/seo'
   import { useIsDesktop } from '#lib/shared/ui/hooks'
-  import { Button, Chip, Drawer, Icon } from '#lib/shared/ui/kit'
+  import { Button, Chip, Drawer, Icon, largestWebp } from '#lib/shared/ui/kit'
   import { PageHeader } from '#lib/shared/ui/layout'
 
   import { clearFilters, countActiveFilters, isFiltered } from '../domain/catalogQuery'
@@ -35,7 +35,7 @@
       ? [{ label: CATALOG_NAVIGATION.label, path: CATALOG_ROOT_PATH }, ...categoryTrail(chain)]
       : [],
   )
-  const firstProduct = $derived(listing?.products[0])
+  const firstImage = $derived(listing?.products[0]?.image)
   const seo = $derived<Omit<Seo.Input, 'title' | 'description' | 'path' | 'breadcrumb'>>({
     noindex: isFiltered(query),
     canonicalPath: query.page >= 2 ? `${path}?page=${query.page}` : path,
@@ -44,12 +44,14 @@
       listing && query.page < listing.totalPages
         ? catalogHref(path, { ...query, page: query.page + 1 })
         : undefined,
-    image: firstProduct && {
-      path: `/images/product-${firstProduct.image}-800.webp`,
-      width: 800,
-      height: 800,
-      alt: firstProduct.name,
-    },
+    image: firstImage
+      ? {
+          path: largestWebp(firstImage),
+          width: firstImage.width,
+          height: firstImage.height,
+          alt: firstImage.alt,
+        }
+      : undefined,
     jsonLd: listing && [
       {
         '@context': 'https://schema.org',

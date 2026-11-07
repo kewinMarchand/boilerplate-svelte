@@ -5,7 +5,7 @@ vi.mock('../infrastructure/slideRepository', () => ({ findSlides: vi.fn() }))
 
 const SLIDE = {
   id: 'heliconia',
-  imageBasePath: '/images/slide-1',
+  image: null,
   title: 'Heliconia',
   text: 'Rouge.',
 }

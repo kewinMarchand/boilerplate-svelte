@@ -5,7 +5,7 @@ type SlideDto = components['schemas']['Slide']
 
 export const toSlide = (dto: SlideDto): Slide.Entity => ({
   id: dto.slug,
-  imageBasePath: `/images/slide-${dto.image}`,
+  image: dto.image,
   title: dto.title,
   text: dto.text,
 })

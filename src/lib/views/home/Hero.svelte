@@ -2,20 +2,17 @@
   import { resolve } from '$app/paths'
 
   import { SITE } from '#lib/shared/config'
-  import { Button, ResponsiveImage } from '#lib/shared/ui/kit'
+  import { Button, ResponsiveImage, staticImage } from '#lib/shared/ui/kit'
+
+  const HERO = staticImage('/images/hero', [640, 960, 1280, 1920], {
+    width: 1920,
+    height: 1080,
+    alt: '',
+  })
 </script>
 
 <div class="hero full-bleed" data-testid="home-hero">
-  <ResponsiveImage
-    basePath="/images/hero"
-    widths={[640, 960, 1280, 1920]}
-    sizes="100vw"
-    width={1920}
-    height={1080}
-    alt=""
-    priority
-    class="hero-media"
-  />
+  <ResponsiveImage image={HERO} sizes="100vw" priority class="hero-media" />
   <div class="hero-overlay"></div>
   <div class="container-page py-12">
     <div class="max-w-prose">

@@ -23,18 +23,18 @@
 
 <article id={product.slug} class="product-card" data-testid="catalog-product">
   <div class="product-card-body">
-    <ResponsiveImage
-      basePath={`/images/product-${product.image}`}
-      widths={[400, 800]}
-      sizes="(min-width: 1024px) 300px, (min-width: 536px) calc(50vw - 36px), calc(100vw - 32px)"
-      width={800}
-      height={800}
-      alt={product.name}
-      {eager}
-      {priority}
-      {fetchPriority}
-      class="product-card-image"
-    />
+    {#if product.image}
+      <ResponsiveImage
+        image={product.image}
+        sizes="(min-width: 1024px) 300px, (min-width: 536px) calc(50vw - 36px), calc(100vw - 32px)"
+        {eager}
+        {priority}
+        {fetchPriority}
+        class="product-card-image"
+      />
+    {:else}
+      <div class="product-card-image bg-surface-muted"></div>
+    {/if}
     <div class="flex flex-col gap-1 p-4">
       <h2 class="text-title font-semibold">{product.name}</h2>
       <p class="font-semibold" data-testid="catalog-product-price">{formatPrice(product.price)}</p>
