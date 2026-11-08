@@ -1,4 +1,4 @@
-import { toCategory, toListing, toProductsQuery } from './catalogTranslation'
+import { toCategory, toListing, toProductDetail, toProductsQuery } from './catalogTranslation'
 
 import type { Catalog } from '#lib/modules/catalog/domain/catalog'
 
@@ -124,5 +124,43 @@ describe('toListing', () => {
     )
 
     expect(listing.totalPages).toBe(1)
+  })
+})
+
+describe('toProductDetail', () => {
+  it('ne garde aucun paragraphe d’une description vide', () => {
+    const detail = toProductDetail({
+      id: 1,
+      slug: 'palmier-nain',
+      name: 'Palmier nain',
+      categorySlug: 'palmiers',
+      price: 4490,
+      exposure: 'soleil',
+      size: 'M',
+      inStock: true,
+      image: null,
+      categoryPath: [{ slug: 'palmiers', name: 'Palmiers' }],
+      description: '',
+    })
+
+    expect(detail.description).toEqual([])
+  })
+
+  it('découpe la description en paragraphes aux lignes vides', () => {
+    const detail = toProductDetail({
+      id: 1,
+      slug: 'palmier-nain',
+      name: 'Palmier nain',
+      categorySlug: 'palmiers',
+      price: 4490,
+      exposure: 'soleil',
+      size: 'M',
+      inStock: true,
+      image: null,
+      categoryPath: [{ slug: 'palmiers', name: 'Palmiers' }],
+      description: 'Rustique.\n\n  \nRésiste au vent,\naux embruns.',
+    })
+
+    expect(detail.description).toEqual(['Rustique.', 'Résiste au vent,\naux embruns.'])
   })
 })

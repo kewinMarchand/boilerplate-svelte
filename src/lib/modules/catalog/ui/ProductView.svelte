@@ -49,6 +49,9 @@
               '@context': 'https://schema.org',
               '@type': 'Product',
               name: detail.name,
+              ...(detail.description.length > 0 && {
+                description: detail.description.join(' '),
+              }),
               sku: detail.slug,
               url: absoluteUrl(productHref(detail.slug)),
               ...(category && { category: category.name }),
@@ -86,6 +89,13 @@
         <p class="text-lead font-semibold" data-testid="product-price">
           {formatPrice(detail.price)}
         </p>
+        {#if detail.description.length > 0}
+          <div data-testid="product-description">
+            {#each detail.description as paragraph, index (index)}
+              <p class="product-paragraph">{paragraph}</p>
+            {/each}
+          </div>
+        {/if}
         <dl class="product-features">
           <dt>Exposition</dt>
           <dd>{EXPOSURE_LABELS[detail.exposure]}</dd>
@@ -134,5 +144,9 @@
 
   .product-features dt {
     font-weight: 600;
+  }
+
+  .product-paragraph {
+    margin-block: 0 var(--bui-space-4);
   }
 </style>
