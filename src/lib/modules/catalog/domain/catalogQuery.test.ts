@@ -21,6 +21,7 @@ describe('parseCatalogQuery', () => {
       priceMin: 10,
       priceMax: 40,
       inStock: true,
+      attributes: {},
       sort: 'prix-asc',
       view: 'liste',
       page: 2,
@@ -32,12 +33,19 @@ describe('parseCatalogQuery', () => {
       parse('exposition=lune&taille=XL&prix_min=abc&tri=hasard&vue=mosaique&page=-3&en_stock=oui'),
     ).toEqual(DEFAULT_QUERY)
   })
+
+  it('lit les attributs par `attr-<code>` répété et ignore les codes ou valeurs mal formés', () => {
+    expect(
+      parse('attr-feuillage=persistant&attr-feuillage=caduc&attr-Hauteur=1&attr-=x&attr-sol=A B')
+        .attributes,
+    ).toEqual({ feuillage: ['persistant', 'caduc'] })
+  })
 })
 
 describe('serializeCatalogQuery', () => {
   it('fait l’aller-retour sans perte', () => {
     const search =
-      '?exposition=soleil&taille=S&taille=L&prix_max=30&en_stock=1&tri=nom&vue=liste&page=3'
+      '?exposition=soleil&taille=S&taille=L&attr-feuillage=caduc&attr-feuillage=persistant&prix_max=30&en_stock=1&tri=nom&vue=liste&page=3'
     expect(serializeCatalogQuery(parse(search))).toBe(search)
   })
 
@@ -70,5 +78,6 @@ describe('variantes de la liste', () => {
     expect(isFiltered(parse('tri=nom'))).toBe(true)
     expect(isFiltered(parse('vue=liste'))).toBe(true)
     expect(isFiltered(parse('en_stock=1'))).toBe(true)
+    expect(isFiltered(parse('attr-feuillage=caduc'))).toBe(true)
   })
 })

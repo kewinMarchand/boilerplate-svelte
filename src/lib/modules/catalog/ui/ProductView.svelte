@@ -111,6 +111,16 @@
             {#if detail.inStock}En stock{:else}<Badge variant="error">Rupture de stock</Badge>{/if}
           </dd>
         </dl>
+        {#if detail.attributes.length > 0}
+          <dl class="product-features" data-testid="product-attributes">
+            {#each detail.attributes as attribute (attribute.code)}
+              <dt>{attribute.label}</dt>
+              <dd>
+                {attribute.unit ? `${attribute.value}\u00a0${attribute.unit}` : attribute.value}
+              </dd>
+            {/each}
+          </dl>
+        {/if}
         {@render purchase?.(detail)}
         {#if category}
           <p>

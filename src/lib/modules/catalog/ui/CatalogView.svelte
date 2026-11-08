@@ -141,7 +141,12 @@
       onSortChange={(sort) => navigation.update({ sort })}
       {filterButton}
     />
-    <ActiveFilters {path} {query} {clearAction} />
+    <ActiveFilters
+      {path}
+      {query}
+      attributeFacets={listing?.facets.attributes ?? []}
+      {clearAction}
+    />
     <ProductGrid
       {status}
       products={listing?.products ?? []}

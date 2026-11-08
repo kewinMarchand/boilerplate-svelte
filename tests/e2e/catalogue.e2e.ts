@@ -39,6 +39,41 @@ test.describe('Catalogue', () => {
     await expect(page.locator('#page-title')).toBeFocused()
   })
 
+  test('filtrer par attribut remet la page à 1 et met à jour l’URL, le compteur et les puces', async ({
+    page,
+    isMobile,
+  }) => {
+    await gotoHydrated(page, '/catalogue?page=2')
+
+    const filters = await openFilters(page, isMobile)
+    await expect(
+      filters.getByTestId('catalog-filter-attribute-feuillage-caduc'),
+    ).toHaveAccessibleName('Caduc (2)')
+    await filters.getByTestId('catalog-filter-attribute-feuillage-caduc').check()
+
+    await expect(page).toHaveURL(/\/catalogue\?attr-feuillage=caduc$/)
+    await expect(page.getByTestId('catalog-results-count')).toHaveText('2 produits')
+    if (isMobile) await page.keyboard.press('Escape')
+
+    const chip = page.getByTestId('catalog-active-filter')
+    await expect(chip).toHaveText(/Feuillage : Caduc/)
+    await page.getByTestId('catalog-clear-filters').first().click()
+    await expect(page).toHaveURL(/\/catalogue$/)
+  })
+
+  test('n’affiche pas de facette d’attribut dans une catégorie dont aucun produit n’en porte', async ({
+    page,
+    isMobile,
+  }) => {
+    await gotoHydrated(page, '/catalogue/plantes-interieur/plantes-a-fleurs/anthurium')
+
+    const filters = await openFilters(page, isMobile)
+    await expect(filters.getByTestId('catalog-filter-exposure-soleil')).toBeVisible()
+    await expect(filters.getByTestId('catalog-filter-attribute-feuillage-persistant')).toHaveCount(
+      0,
+    )
+  })
+
   test('« Tout effacer » garde la catégorie et la vue', async ({ page }) => {
     await gotoHydrated(page, '/catalogue/plantes-exterieur?taille=L&tri=nom&vue=liste')
     await page.getByTestId('catalog-clear-filters').first().click()
@@ -124,6 +159,23 @@ test.describe('Catalogue sans JavaScript', () => {
     expect(params.get('prix_max')).toBe('30')
     expect(params.get('tri')).toBe('prix-desc')
     await expect(page.getByTestId('catalog-active-filter')).toHaveCount(2)
+  })
+
+  test('le formulaire GET applique un attribut en conservant les autres filtres', async ({
+    page,
+  }) => {
+    await page.goto('/catalogue?exposition=soleil')
+    const filters = page.getByTestId('catalog-filters')
+
+    await filters.getByTestId('catalog-filter-attribute-feuillage-persistant').check()
+    await filters.getByRole('button', { name: 'Appliquer les filtres' }).click()
+
+    await expect(page).toHaveURL(/attr-feuillage=persistant/)
+    expect(new URL(page.url()).searchParams.getAll('exposition')).toEqual(['soleil'])
+    await expect(page.getByTestId('catalog-active-filter')).toHaveText([
+      /Soleil$/,
+      /Feuillage : Persistant$/,
+    ])
   })
 })
 

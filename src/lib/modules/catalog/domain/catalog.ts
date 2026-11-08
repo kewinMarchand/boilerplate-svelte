@@ -38,6 +38,15 @@ export declare namespace Catalog {
     categoryPath: CategoryPath
     /** Paragraphes de la description, vide si l'admin n'en a pas écrit. */
     description: string[]
+    attributes: ProductAttribute[]
+  }
+
+  /** Attribut configuré dans l'admin et renseigné sur le produit : `value` est le libellé affiché. */
+  interface ProductAttribute {
+    code: string
+    label: string
+    value: string
+    unit: string | null
   }
 
   type ProductLoad =
@@ -72,6 +81,8 @@ export declare namespace Catalog {
     priceMin: number | undefined
     priceMax: number | undefined
     inStock: boolean
+    /** Valeurs cochées des attributs filtrables, par code d'attribut. */
+    attributes: Record<string, string[]>
     sort: Sort
     view: View
     page: number
@@ -82,9 +93,16 @@ export declare namespace Catalog {
     count: number
   }
 
+  interface AttributeFacet {
+    code: string
+    label: string
+    values: (FacetCount<string> & { label: string })[]
+  }
+
   interface Facets {
     exposure: FacetCount<Exposure>[]
     size: FacetCount<Size>[]
+    attributes: AttributeFacet[]
   }
 
   interface Listing {

@@ -8,6 +8,7 @@ import type { Page } from '@playwright/test'
 
 const EXTRA_ROUTES = [
   '/catalogue?exposition=mi-ombre&taille=M&vue=liste',
+  '/catalogue?attr-feuillage=persistant',
   '/route-inexistante',
   '/_erreur-test',
   '/charte-graphique',

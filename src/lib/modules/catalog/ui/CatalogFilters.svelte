@@ -18,7 +18,14 @@
   const uid = $props.id()
 
   const keptFields = $derived(
-    queryEntries(query, ['exposition', 'taille', 'prix_min', 'prix_max', 'en_stock']),
+    queryEntries(query, [
+      'exposition',
+      'taille',
+      'prix_min',
+      'prix_max',
+      'en_stock',
+      ...listing.facets.attributes.map(({ code }) => `attr-${code}`),
+    ]),
   )
 </script>
 
@@ -29,7 +36,7 @@
   onchange={onsubmit}
   {onsubmit}
 >
-  {#each keptFields as [name, value] (name)}
+  {#each keptFields as [name, value] (`${name}=${value}`)}
     <input type="hidden" {name} {value} />
   {/each}
 
@@ -92,6 +99,29 @@
         {/each}
       </fieldset>
     </details>
+
+    {#each listing.facets.attributes as attribute (attribute.code)}
+      <details open class="bui-accordion__item">
+        <summary class="bui-accordion__summary">
+          {attribute.label}<Icon name="chevron-down" class="bui-accordion__icon" />
+        </summary>
+        <fieldset class="bui-accordion__content flex flex-col gap-2">
+          <legend class="sr-only">{attribute.label}</legend>
+          {#each attribute.values as { value, label, count } (value)}
+            {@const checked = query.attributes[attribute.code]?.includes(value) ?? false}
+            <Checkbox
+              id="{uid}-attr-{attribute.code}-{value}"
+              label="{label} ({count})"
+              name="attr-{attribute.code}"
+              {value}
+              {checked}
+              disabled={count === 0 && !checked}
+              data-testid={`catalog-filter-attribute-${attribute.code}-${value}`}
+            />
+          {/each}
+        </fieldset>
+      </details>
+    {/each}
 
     <details open class="bui-accordion__item">
       <summary class="bui-accordion__summary">

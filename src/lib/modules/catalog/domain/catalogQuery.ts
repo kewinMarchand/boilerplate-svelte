@@ -25,6 +25,19 @@ function isSize(value: string): value is Catalog.Size {
   return (SIZES as readonly string[]).includes(value)
 }
 
+const ATTRIBUTE_PARAM = /^attr-([a-z][a-z0-9-]{0,39})$/
+const ATTRIBUTE_VALUE = /^[a-z0-9][a-z0-9-]{0,39}$/
+
+/** `attr-<code>` répété, une valeur par occurrence ; code ou valeur mal formés ignorés. */
+const parseAttributes = (params: URLSearchParams): Catalog.Query['attributes'] => {
+  const attributes: Catalog.Query['attributes'] = {}
+  for (const [name, value] of params) {
+    const code = ATTRIBUTE_PARAM.exec(name)?.[1]
+    if (code && ATTRIBUTE_VALUE.test(value)) (attributes[code] ??= []).push(value)
+  }
+  return attributes
+}
+
 const emptyToUndefined = (value: string | null) =>
   value === null || value === '' ? undefined : value
 
@@ -34,6 +47,7 @@ export const DEFAULT_QUERY: Catalog.Query = {
   priceMin: undefined,
   priceMax: undefined,
   inStock: false,
+  attributes: {},
   sort: 'pertinence',
   view: 'grille',
   page: 1,
@@ -50,13 +64,21 @@ export const parseCatalogQuery = (params: URLSearchParams): Catalog.Query => {
     view: params.get('vue') ?? undefined,
     page: params.get('page') ?? undefined,
   })
-  return { ...parsed, priceMin: parsed.priceMin, priceMax: parsed.priceMax }
+  return {
+    ...parsed,
+    priceMin: parsed.priceMin,
+    priceMax: parsed.priceMax,
+    attributes: parseAttributes(params),
+  }
 }
 
 export const serializeCatalogQuery = (query: Catalog.Query): string => {
   const params = new URLSearchParams()
   query.exposures.forEach((value) => params.append('exposition', value))
   query.sizes.forEach((value) => params.append('taille', value))
+  Object.entries(query.attributes).forEach(([code, values]) =>
+    values.forEach((value) => params.append(`attr-${code}`, value)),
+  )
   if (query.priceMin !== undefined) params.set('prix_min', String(query.priceMin))
   if (query.priceMax !== undefined) params.set('prix_max', String(query.priceMax))
   if (query.inStock) params.set('en_stock', '1')
@@ -81,6 +103,7 @@ export const clearFilters = (query: Catalog.Query): Catalog.Query => ({
 export const countActiveFilters = (query: Catalog.Query) =>
   query.exposures.length +
   query.sizes.length +
+  Object.values(query.attributes).flat().length +
   Number(query.priceMin !== undefined) +
   Number(query.priceMax !== undefined) +
   Number(query.inStock)
