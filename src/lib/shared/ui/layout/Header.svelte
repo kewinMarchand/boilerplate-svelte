@@ -2,25 +2,28 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
 
-  import { CATALOG_NAVIGATION, MAIN_NAVIGATION, SITE } from '#lib/shared/config'
+  import { CATALOG_NAVIGATION, MAIN_NAVIGATION } from '#lib/shared/config'
   import { A11yModeToggle } from '#lib/shared/ui/a11y-mode'
   import { ColorSchemeToggle } from '#lib/shared/ui/color-scheme'
+  import { ResponsiveImage } from '#lib/shared/ui/kit'
 
   import CategoryMenu from './CategoryMenu.svelte'
   import MobileMenu from './MobileMenu.svelte'
   import NavLink from './NavLink.svelte'
 
-  import type { NavigationNode } from '#lib/shared/config'
+  import type { NavigationNode, SiteIdentity } from '#lib/shared/config'
   import type { Snippet } from 'svelte'
 
   interface Props {
     categoryMenu: NavigationNode[]
+    identity: SiteIdentity
     cartLink: Snippet
   }
 
-  const { categoryMenu, cartLink }: Props = $props()
+  const { categoryMenu, identity, cartLink }: Props = $props()
 
   const [home, ...otherLinks] = MAIN_NAVIGATION
+  const LOGO_HEIGHT = 40
 </script>
 
 <header class="bg-primary text-on-primary">
@@ -31,8 +34,17 @@
       aria-current={page.url.pathname === '/' ? 'page' : undefined}
       data-testid="layout-logo"
     >
-      <img src="/logo-mark.svg" alt="" width="40" height="40" />
-      {SITE.name}
+      {#if identity.logo}
+        <ResponsiveImage
+          image={{ ...identity.logo, alt: identity.name }}
+          sizes={`${Math.round((LOGO_HEIGHT * identity.logo.width) / identity.logo.height)}px`}
+          priority
+          class="h-10 w-auto"
+        />
+      {:else}
+        <img src="/logo-mark.svg" alt="" width="40" height="40" />
+        {identity.name}
+      {/if}
     </a>
     <nav aria-label="Navigation principale" class="js:max-lg:hidden">
       <ul class="flex flex-wrap gap-1">

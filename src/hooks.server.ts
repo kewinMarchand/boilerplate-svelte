@@ -6,9 +6,12 @@ import {
   SCENARIO_HEADER,
   shouldReportError,
 } from '#lib/shared/observability/index.server'
-import { announceStartup, CSP, CSP_HEADER } from '#lib/shared/security/index.server'
+import { announceStartup, buildSiteCsp, CSP_HEADER } from '#lib/shared/security/index.server'
+import { buildThemeCss } from '#lib/shared/theme/themeStyle'
 import { A11Y_MODE_SCRIPT } from '#lib/shared/ui/a11y-mode'
 import { COLOR_SCHEME_SCRIPT } from '#lib/shared/ui/color-scheme'
+
+import { loadSiteIdentity } from '#lib/modules/content/index.server'
 
 import { MAINTENANCE_HTML, MAINTENANCE_RETRY_AFTER_SECONDS } from '#lib/views/errors'
 
@@ -33,12 +36,23 @@ export const handle: Handle = async ({ event, resolve }) => {
     })
   }
 
+  // Identité lue une fois par requête : `<html>` et `<head>` en dépendent, le layout la reçoit par `locals`
+  const identity = await loadSiteIdentity()
+  event.locals.siteIdentity = identity
+  const themeCss = identity.theme ? buildThemeCss(identity.theme) : ''
+
   const response = await resolve(event, {
     preload: ({ type }) => type === 'css',
-    transformPageChunk: ({ html }) => html.replace('%boot.script%', BOOT_SCRIPT),
+    transformPageChunk: ({ html }) =>
+      html
+        .replace('%color.scheme%', identity.defaultColorScheme)
+        .replace(
+          '%boot.script%',
+          themeCss ? `${BOOT_SCRIPT}<style>${themeCss}</style>` : BOOT_SCRIPT,
+        ),
   })
   // CSP en mode Report-Only : rien n'est bloqué, chaque écart est signalé à /api/csp-report
-  response.headers.set(CSP_HEADER, CSP)
+  response.headers.set(CSP_HEADER, buildSiteCsp(themeCss ? [themeCss] : []))
   return response
 }
 

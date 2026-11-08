@@ -4,4 +4,4 @@
   const { data } = $props()
 </script>
 
-<HomeView blog={data.blog} featured={data.featured} />
+<HomeView blog={data.blog} featured={data.featured} identity={data.siteIdentity} />

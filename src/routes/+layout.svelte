@@ -8,7 +8,7 @@
 </script>
 
 <Providers>
-  <AppShell categoryMenu={data.categoryMenu}>
+  <AppShell categoryMenu={data.categoryMenu} identity={data.siteIdentity}>
     {#snippet cartLink()}
       <CartLink />
     {/snippet}

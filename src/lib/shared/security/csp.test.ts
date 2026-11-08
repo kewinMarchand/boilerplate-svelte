@@ -11,6 +11,15 @@ describe('siteCsp', () => {
     expect(csp).toContain("img-src 'self' data: https: http://localhost:8091")
     expect(csp).toContain('report-uri /api/csp-report')
     expect(csp).not.toContain('matomo')
+    expect(csp).not.toContain('style-src-elem')
+  })
+
+  it('autorise un bloc <style> en ligne par son empreinte, sans « unsafe-inline »', () => {
+    const csp = siteCsp({ apiUrl: 'http://localhost:8091', inlineStyles: ['a{}'] })
+    expect(csp).toContain(
+      "style-src-elem 'self' 'sha256-X1RutGBrXCt9KkSaXMK7tHftWiRscFHOhxsS8tv8hBk='",
+    )
+    expect(csp.split('style-src-elem')[1]).not.toContain('unsafe-inline')
   })
 
   it('ajoute Matomo et GlitchTip seulement quand ils sont configurés', () => {

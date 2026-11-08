@@ -2,7 +2,12 @@ import { render, screen, within } from '@testing-library/svelte'
 
 import LegalPageContent from './LegalPageContent.svelte'
 
-vi.mock('$app/state', () => ({ page: { url: new URL('http://localhost/donnees-personnelles') } }))
+vi.mock('$app/state', () => ({
+  page: {
+    url: new URL('http://localhost/donnees-personnelles'),
+    data: { siteIdentity: { name: 'Boilerplate' } },
+  },
+}))
 
 const PAGE = {
   title: 'Données personnelles',

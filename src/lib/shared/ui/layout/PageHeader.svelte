@@ -20,7 +20,9 @@
 
   const path = $derived(toAppPath(page.url.pathname))
   const breadcrumb = $derived(buildBreadcrumb({ label: title, path }, parents))
-  const meta = $derived(buildPageMeta({ ...seo, title, description, path, breadcrumb }))
+  const meta = $derived(
+    buildPageMeta({ ...seo, title, description, path, breadcrumb }, page.data.siteIdentity.name),
+  )
 </script>
 
 <SeoHead {meta} />

@@ -1,1 +1,1 @@
-export { announceStartup, CSP, CSP_HEADER, cspReportHandler } from './csp.server'
+export { announceStartup, buildSiteCsp, CSP_HEADER, cspReportHandler } from './csp.server'

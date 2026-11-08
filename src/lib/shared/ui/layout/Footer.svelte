@@ -2,8 +2,14 @@
   import { dev } from '$app/env'
   import { resolve } from '$app/paths'
 
-  import { LEGAL_NAVIGATION, SITE } from '#lib/shared/config'
+  import { LEGAL_NAVIGATION } from '#lib/shared/config'
   import { resolveHref } from '#lib/shared/routing'
+
+  interface Props {
+    siteName: string
+  }
+
+  const { siteName }: Props = $props()
 </script>
 
 <footer class="mt-12 bg-surface-muted py-6" data-testid="app-footer">
@@ -19,7 +25,7 @@
     </nav>
     <p class="flex items-center gap-2 text-body-sm text-text-muted">
       <img src="/logo-mark.svg" alt="" width="24" height="24" />
-      {SITE.name}
+      {siteName}
       {#if dev}
         <a href={resolve('/charte-graphique')} class="ml-auto underline">Charte graphique</a>
       {/if}

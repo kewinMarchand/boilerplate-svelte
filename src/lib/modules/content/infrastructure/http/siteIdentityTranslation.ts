@@ -1,0 +1,20 @@
+import type { SiteIdentity } from '#lib/modules/content/domain/siteIdentity'
+import type { components } from '#lib/shared/api/client'
+
+type SiteIdentityDto = components['schemas']['SiteIdentity']
+type ThemeTokensDto = components['schemas']['ThemeTokens']
+
+// Les jetons sont injectés tels quels dans un bloc <style> : rien d'autre qu'une couleur #rrggbb n'y entre.
+const isHexColors = (tokens: ThemeTokensDto) =>
+  Object.values(tokens).every((value) => /^#[0-9a-f]{6}$/i.test(value))
+
+export const toSiteIdentity = (dto: SiteIdentityDto): SiteIdentity => ({
+  name: dto.name,
+  tagline: dto.tagline,
+  logo: dto.logo,
+  defaultColorScheme: dto.defaultColorScheme,
+  theme:
+    dto.theme && isHexColors(dto.theme.light) && isHexColors(dto.theme.dark)
+      ? { light: dto.theme.light, dark: dto.theme.dark }
+      : null,
+})
