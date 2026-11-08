@@ -10,6 +10,7 @@
         "http://localhost:3220/catalogue",
         "http://localhost:3220/catalogue/plantes-interieur",
         "http://localhost:3220/catalogue/plantes-interieur/feuillages",
+        "http://localhost:3220/blog",
         "http://localhost:3220/mentions-legales",
         "http://localhost:3220/donnees-personnelles",
         "http://localhost:3220/accessibilite",

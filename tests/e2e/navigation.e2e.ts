@@ -12,6 +12,37 @@ test.describe('Navigation', () => {
     await expect(nav.getByRole('link', { name: 'Accueil' })).not.toHaveAttribute('aria-current')
   })
 
+  test('le lien Blog suit le catalogue et mène à la liste des articles (desktop)', async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, 'Sur mobile, la navigation principale est dans le menu latéral.')
+    await gotoHydrated(page, '/')
+
+    const nav = page.getByRole('navigation', { name: 'Navigation principale' })
+    await expect(nav.locator(':scope > ul > li:visible')).toHaveText([
+      'Accueil',
+      /Catalogue/,
+      'Blog',
+      'Tâches',
+      'Contact',
+    ])
+    await nav.getByRole('link', { name: 'Blog' }).click()
+
+    await expect(page).toHaveURL(/\/blog$/)
+    await expect(nav.getByRole('link', { name: 'Blog' })).toHaveAttribute('aria-current', 'page')
+  })
+
+  test('le menu mobile mène à la liste des articles', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'Menu latéral réservé au mobile.')
+    await gotoHydrated(page, '/')
+
+    await page.getByTestId('layout-mobile-menu-toggle').click()
+    await page.getByTestId('layout-mobile-menu').getByRole('link', { name: 'Blog' }).click()
+
+    await expect(page).toHaveURL(/\/blog$/)
+  })
+
   test('le logo mène à l’accueil et porte aria-current sur l’accueil', async ({ page }) => {
     await page.goto('/')
     const logo = page.getByTestId('layout-logo')

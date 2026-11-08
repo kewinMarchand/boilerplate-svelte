@@ -35,9 +35,29 @@ test.describe('Fiche article', () => {
     await expect
       .poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth))
       .toBeGreaterThan(0)
-    await expect(page.getByTestId('layout-breadcrumb')).toContainText(
+  })
+
+  test('le fil d’Ariane mène à la liste des articles', async ({ page }) => {
+    await page.goto(ARTICLE)
+    const breadcrumb = page.getByTestId('layout-breadcrumb')
+
+    await expect(breadcrumb.getByRole('listitem')).toHaveText([
+      'Accueil',
+      'Blog',
       'Un carrousel accessible sans dépendance',
-    )
+    ])
+    await breadcrumb.getByRole('link', { name: 'Blog' }).click()
+
+    await expect(page).toHaveURL(/\/blog$/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Blog')
+  })
+
+  test('le lien « Tous les articles » mène à la liste', async ({ page }) => {
+    await page.goto(ARTICLE)
+    await page.getByTestId('article-blog-link').click()
+
+    await expect(page).toHaveURL(/\/blog$/)
+    await expect(page.getByTestId('blog-list')).toBeVisible()
   })
 
   test('expose ses données structurées d’article', async ({ page }) => {

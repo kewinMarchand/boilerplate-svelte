@@ -15,6 +15,14 @@ test.describe('Accueil', () => {
     await expect(page.getByTestId('home-blog-empty')).toHaveCount(0)
   })
 
+  test('le lien « Tous les articles » mène à la liste du blog', async ({ page }) => {
+    await page.goto('/')
+    await page.getByTestId('home-blog-all').click()
+
+    await expect(page).toHaveURL(/\/blog$/)
+    await expect(page.getByTestId('blog-list')).toBeVisible()
+  })
+
   test('l’image du hero est prioritaire et les articles sont dans le HTML initial', async ({
     request,
   }) => {

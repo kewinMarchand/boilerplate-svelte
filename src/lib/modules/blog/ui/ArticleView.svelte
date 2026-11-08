@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { BLOG_NAVIGATION } from '#lib/shared/config'
   import { resolveHref } from '#lib/shared/routing'
   import { absoluteUrl } from '#lib/shared/seo'
   import { Alert, largestWebp, ResponsiveImage } from '#lib/shared/ui/kit'
@@ -17,6 +18,7 @@
 
   const { article }: Props = $props()
 
+  const PARENTS = [{ label: BLOG_NAVIGATION.label, path: BLOG_NAVIGATION.href }]
   const IMAGE_SIZES = '(min-width: 800px) 760px, calc(100vw - 32px)'
 
   const seo = $derived(
@@ -49,12 +51,18 @@
 </script>
 
 {#if article.status === 'error'}
-  <PageHeader title="Article" description="Article du blog." {seo} />
+  <PageHeader title="Article" description="Article du blog." parents={PARENTS} {seo} />
   <Alert variant="error" data-testid="article-error">{article.message}</Alert>
 {:else}
   {@const { title, excerpt, publishedAt, image, html } = article.article}
   <article class="max-w-prose" data-testid="article-page">
-    <PageHeader {title} description={excerpt || title} {seo} titleTestId="article-title" />
+    <PageHeader
+      {title}
+      description={excerpt || title}
+      parents={PARENTS}
+      {seo}
+      titleTestId="article-title"
+    />
     <p class="mb-6 text-body-sm text-text-muted">
       Publié le <time datetime={publishedAt}>{formatPublishedAt(publishedAt)}</time>
     </p>
@@ -73,6 +81,10 @@
       <!-- eslint-disable-next-line svelte/no-at-html-tags -- HTML échappé par l'API -->
       {@html html}
     </div>
-    <p class="mt-12"><a href={resolveHref('/')} class="bui-link">Retour à l’accueil</a></p>
+    <p class="mt-12">
+      <a href={resolveHref(BLOG_NAVIGATION.href)} class="bui-link" data-testid="article-blog-link"
+        >Tous les articles</a
+      >
+    </p>
   </article>
 {/if}

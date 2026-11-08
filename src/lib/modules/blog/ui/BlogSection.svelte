@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { BLOG_NAVIGATION } from '#lib/shared/config'
+  import { resolveHref } from '#lib/shared/routing'
+
   import BlogGrid from './BlogGrid.svelte'
   import { useBlogRetry } from './hooks/useBlogRetry.svelte'
 
@@ -24,4 +27,9 @@
       onRetry={() => void blogRetry.retry()}
     />
   </div>
+  <p class="mt-6">
+    <a href={resolveHref(BLOG_NAVIGATION.href)} class="bui-link" data-testid="home-blog-all"
+      >Tous les articles</a
+    >
+  </p>
 </section>
