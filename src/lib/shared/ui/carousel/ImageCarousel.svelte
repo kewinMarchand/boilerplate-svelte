@@ -42,6 +42,7 @@
           {#if slide.image}
             <ResponsiveImage
               image={slide.image}
+              fallback
               sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
               class="h-auto w-full rounded-md object-cover"
             />

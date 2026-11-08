@@ -25,6 +25,8 @@
         sizes={featured
           ? '(min-width: 1024px) 66vw, 100vw'
           : '(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'}
+        fallback
+        pictureClass={featured ? 'md:h-full' : ''}
         class={featured
           ? 'aspect-video h-auto w-full object-cover md:absolute md:inset-0 md:aspect-auto md:h-full'
           : 'aspect-video h-auto w-full object-cover'}

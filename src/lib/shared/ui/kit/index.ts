@@ -18,3 +18,4 @@ export {
   Skeleton,
   Switch,
 } from '@kewinmarchand/boilerplates-ui/svelte'
+export { initImageFallback } from '@kewinmarchand/boilerplates-ui/vanilla'

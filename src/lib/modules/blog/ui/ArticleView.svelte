@@ -80,6 +80,7 @@
       <ResponsiveImage
         {image}
         sizes={IMAGE_SIZES}
+        fallback
         priority
         class="aspect-video h-auto w-full rounded-md object-cover"
       />

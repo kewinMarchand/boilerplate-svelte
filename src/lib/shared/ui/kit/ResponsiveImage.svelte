@@ -8,6 +8,9 @@
     eager?: boolean
     fetchPriority?: 'high' | 'low' | 'auto'
     class?: string
+    /** Image de l'API : fond de remplacement si elle échoue (`bui-picture`, logo exclu). */
+    fallback?: boolean
+    pictureClass?: string
   }
 
   const {
@@ -17,6 +20,8 @@
     eager = false,
     fetchPriority = priority ? 'high' : 'auto',
     class: className,
+    fallback = false,
+    pictureClass,
   }: Props = $props()
 
   const preload = $derived(image.sources[0])
@@ -35,7 +40,7 @@
   {/if}
 </svelte:head>
 
-<picture>
+<picture class={[fallback && 'bui-picture', pictureClass]}>
   {#each image.sources as source (source.type)}
     <source type={source.type} srcset={source.srcset} {sizes} />
   {/each}

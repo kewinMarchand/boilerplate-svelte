@@ -98,6 +98,7 @@
         <ResponsiveImage
           image={detail.image}
           sizes={IMAGE_SIZES}
+          fallback
           priority
           class="aspect-square h-auto w-full rounded-md object-cover"
         />

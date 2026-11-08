@@ -34,6 +34,7 @@
         {eager}
         {priority}
         {fetchPriority}
+        fallback
         class="product-card-image"
       />
     {:else}

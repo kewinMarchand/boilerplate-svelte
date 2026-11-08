@@ -27,6 +27,7 @@
         {sizes}
         priority={gallery.current === 0}
         eager
+        fallback
         class="aspect-square h-auto w-full rounded-md object-cover"
       />
     {/key}
@@ -45,7 +46,13 @@
             onkeydown={gallery.onKeydown}
             data-testid="product-gallery-thumb"
           >
-            <ResponsiveImage image={{ ...image, alt: '' }} sizes={THUMB_SIZES} class="size-full" />
+            <ResponsiveImage
+              image={{ ...image, alt: '' }}
+              sizes={THUMB_SIZES}
+              fallback
+              pictureClass="h-full"
+              class="size-full"
+            />
           </button>
         {:else}
           <a
@@ -56,7 +63,13 @@
             aria-current={index === 0 ? 'true' : undefined}
             data-testid="product-gallery-thumb"
           >
-            <ResponsiveImage image={{ ...image, alt: '' }} sizes={THUMB_SIZES} class="size-full" />
+            <ResponsiveImage
+              image={{ ...image, alt: '' }}
+              sizes={THUMB_SIZES}
+              fallback
+              pictureClass="h-full"
+              class="size-full"
+            />
           </a>
         {/if}
       </li>
