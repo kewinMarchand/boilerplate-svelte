@@ -9,22 +9,27 @@
 
   interface Props {
     article: Article.Entity
+    featured?: boolean
   }
 
-  const { article }: Props = $props()
+  const { article, featured = false }: Props = $props()
 </script>
 
 <article class="bui-card relative" data-testid="home-blog-card">
   {#if article.image}
-    <div class="bui-card__media">
+    <div class={['bui-card__media', featured && 'md:relative md:flex-1']}>
       <ResponsiveImage
         image={article.image}
-        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-        class="aspect-video h-auto w-full object-cover"
+        sizes={featured
+          ? '(min-width: 1024px) 66vw, 100vw'
+          : '(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'}
+        class={featured
+          ? 'aspect-video h-auto w-full object-cover md:absolute md:inset-0 md:aspect-auto md:h-full'
+          : 'aspect-video h-auto w-full object-cover'}
       />
     </div>
   {/if}
-  <div class="bui-card__body">
+  <div class={['bui-card__body', featured && 'md:flex-none']}>
     <h3 class="bui-card__title">
       <a href={resolveHref(articleHref(article.slug))} class="blog-card-link">{article.title}</a>
     </h3>

@@ -24,7 +24,7 @@
     data-testid="home-blog-loading"
   >
     {#each [1, 2, 3] as key (key)}
-      <Skeleton height="128px" />
+      <Skeleton class={key === 1 ? 'h-32 md:h-auto' : 'h-32'} />
     {/each}
   </div>
 {:else if status === 'error'}
@@ -40,8 +40,8 @@
   </Alert>
 {:else}
   <div class="blog-grid">
-    {#each articles as article (article.id)}
-      <BlogCard {article} />
+    {#each articles as article, index (article.id)}
+      <BlogCard {article} featured={index === 0} />
     {/each}
   </div>
 {/if}
