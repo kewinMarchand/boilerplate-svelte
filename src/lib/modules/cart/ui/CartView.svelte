@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { tick } from 'svelte'
+
   import { resolveHref } from '#lib/shared/routing'
   import { Button } from '#lib/shared/ui/kit'
   import { PageHeader } from '#lib/shared/ui/layout'
@@ -13,6 +15,18 @@
   const productHref = (slug: string): AppPath => `/produit/${slug}`
 
   const cart = useCart()
+
+  let list: HTMLUListElement | null = null
+  let empty: HTMLParagraphElement | null = null
+
+  // Sans cela, le focus retombe en haut de la page après un retrait
+  const remove = async (slug: string, index: number) => {
+    cart.remove(slug)
+    await tick()
+    const buttons = list?.querySelectorAll<HTMLButtonElement>(':scope > li button')
+    const target = buttons?.[Math.min(index, cart.lines.length - 1)] ?? empty
+    target?.focus()
+  }
 
   const changeQuantity = (slug: string, event: Event & { currentTarget: HTMLInputElement }) => {
     const quantity = event.currentTarget.valueAsNumber
@@ -30,13 +44,13 @@
 <!-- Le panier n'existe que dans le navigateur : il est lu après l'hydratation. -->
 {#if cart.hydrated}
   {#if cart.lines.length === 0}
-    <p data-testid="cart-empty">
+    <p bind:this={empty} tabindex="-1" data-testid="cart-empty">
       Votre panier est vide.
       <a href={resolveHref(CATALOG_PATH)} class="bui-link">Parcourir le catalogue</a>
     </p>
   {:else}
-    <ul class="grid gap-4">
-      {#each cart.lines as line (line.slug)}
+    <ul bind:this={list} class="grid gap-4">
+      {#each cart.lines as line, index (line.slug)}
         <li class="cart-line" data-testid="cart-line">
           <a href={resolveHref(productHref(line.slug))} class="bui-link font-semibold">
             {line.name}
@@ -58,7 +72,7 @@
           <Button
             variant="outline"
             aria-label={`Retirer ${line.name}`}
-            onclick={() => cart.remove(line.slug)}
+            onclick={() => remove(line.slug, index)}
             data-testid="cart-remove"
           >
             Retirer
