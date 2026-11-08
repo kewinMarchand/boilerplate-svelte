@@ -9,15 +9,20 @@
   import { CATALOG_ROOT_PATH } from '../domain/categoryPath'
   import { formatPrice } from '../domain/price'
   import { EXPOSURE_LABELS } from './labels'
+  import SimilarProducts from './SimilarProducts.svelte'
 
   import type { Catalog } from '../domain/catalog'
   import type { Seo } from '#lib/shared/seo'
+  import type { Snippet } from 'svelte'
 
   interface Props {
     product: Catalog.ProductPage
+    similarProducts: Catalog.Product[]
+    /** Bouton d'achat, fourni par la couche de routage (module panier). */
+    purchase?: Snippet<[Catalog.ProductDetail]>
   }
 
-  const { product }: Props = $props()
+  const { product, similarProducts, purchase }: Props = $props()
 
   const IMAGE_SIZES = '(min-width: 1440px) 680px, (min-width: 768px) 50vw, calc(100vw - 32px)'
   const CATALOG: Seo.BreadcrumbItem = { label: CATALOG_NAVIGATION.label, path: CATALOG_ROOT_PATH }
@@ -106,6 +111,7 @@
             {#if detail.inStock}En stock{:else}<Badge variant="error">Rupture de stock</Badge>{/if}
           </dd>
         </dl>
+        {@render purchase?.(detail)}
         {#if category}
           <p>
             <a href={resolveHref(category.path)} class="bui-link">
@@ -116,6 +122,9 @@
       </div>
     </div>
   </article>
+  {#if similarProducts.length}
+    <SimilarProducts products={similarProducts} />
+  {/if}
 {/if}
 
 <style>

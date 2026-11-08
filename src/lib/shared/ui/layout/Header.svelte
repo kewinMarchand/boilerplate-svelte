@@ -11,12 +11,14 @@
   import NavLink from './NavLink.svelte'
 
   import type { NavigationNode } from '#lib/shared/config'
+  import type { Snippet } from 'svelte'
 
   interface Props {
     categoryMenu: NavigationNode[]
+    cartLink: Snippet
   }
 
-  const { categoryMenu }: Props = $props()
+  const { categoryMenu, cartLink }: Props = $props()
 
   const [home, ...otherLinks] = MAIN_NAVIGATION
 </script>
@@ -47,6 +49,7 @@
     <div class="hidden js:max-lg:block">
       <MobileMenu nodes={categoryMenu} />
     </div>
+    {@render cartLink()}
     <ColorSchemeToggle />
     <A11yModeToggle />
   </div>

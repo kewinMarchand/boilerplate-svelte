@@ -2,4 +2,9 @@ export { getCategoryMenu, listCatalogPaths } from './application/catalogNavigati
 export type { CatalogPageLoad } from './application/catalogPage.server'
 export { loadCatalogPage } from './application/catalogPage.server'
 export { CATALOG_DEPENDENCY } from './application/dependencies'
-export { listProductPaths, loadFeaturedProducts, loadProduct } from './application/products.server'
+export {
+  listProductPaths,
+  loadFeaturedProducts,
+  loadProduct,
+  loadSimilarProducts,
+} from './application/products.server'
