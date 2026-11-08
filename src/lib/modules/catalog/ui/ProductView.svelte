@@ -99,6 +99,7 @@
           image={detail.image}
           sizes={IMAGE_SIZES}
           fallback
+          pictureClass="rounded-md"
           priority
           class="aspect-square h-auto w-full rounded-md object-cover"
         />

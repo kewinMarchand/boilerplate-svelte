@@ -81,6 +81,7 @@
         {image}
         sizes={IMAGE_SIZES}
         fallback
+        pictureClass="rounded-md"
         priority
         class="aspect-video h-auto w-full rounded-md object-cover"
       />

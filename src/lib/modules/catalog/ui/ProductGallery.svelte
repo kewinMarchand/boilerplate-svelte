@@ -28,6 +28,7 @@
         priority={gallery.current === 0}
         eager
         fallback
+        pictureClass="rounded-md"
         class="aspect-square h-auto w-full rounded-md object-cover"
       />
     {/key}
