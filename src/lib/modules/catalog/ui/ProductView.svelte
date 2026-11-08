@@ -9,6 +9,7 @@
   import { CATALOG_ROOT_PATH } from '../domain/categoryPath'
   import { formatPrice } from '../domain/price'
   import { EXPOSURE_LABELS } from './labels'
+  import ProductGallery from './ProductGallery.svelte'
   import SimilarProducts from './SimilarProducts.svelte'
 
   import type { Catalog } from '../domain/catalog'
@@ -38,9 +39,14 @@
       ? `${detail.name} : exposition ${EXPOSURE_LABELS[detail.exposure].toLowerCase()}, taille ${detail.size}, ${formatPrice(detail.price)}. ${detail.inStock ? 'En stock' : 'En rupture de stock'}, rayon ${category?.name ?? 'catalogue'}.`
       : 'Fiche produit de notre jardinerie tropicale.',
   )
+  const galleryImages = $derived(
+    detail?.gallery.length ? [...(detail.image ? [detail.image] : []), ...detail.gallery] : [],
+  )
   const seo = $derived(
     detail
       ? {
+          metaTitle: detail.metaTitle,
+          metaDescription: detail.metaDescription,
           image: detail.image
             ? {
                 path: largestWebp(detail.image),
@@ -82,7 +88,9 @@
   <article data-testid="product-page">
     <PageHeader title={detail.name} {description} {parents} {seo} titleTestId="product-title" />
     <div class="product-page">
-      {#if detail.image}
+      {#if galleryImages.length > 0}
+        <ProductGallery images={galleryImages} sizes={IMAGE_SIZES} />
+      {:else if detail.image}
         <ResponsiveImage
           image={detail.image}
           sizes={IMAGE_SIZES}

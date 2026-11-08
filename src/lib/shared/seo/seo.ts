@@ -15,9 +15,17 @@ export declare namespace Seo {
     alt: string
   }
 
+  /** Titre et description administrés (page fixe, produit, article) : vides, la page garde les siens. */
+  interface Override {
+    title: string
+    description: string
+  }
+
   interface Input {
     title?: string | undefined
     description: string
+    metaTitle?: string | undefined
+    metaDescription?: string | undefined
     path: string
     canonicalPath?: string | undefined
     noindex?: boolean | undefined

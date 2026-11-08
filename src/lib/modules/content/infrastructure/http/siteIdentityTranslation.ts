@@ -12,6 +12,13 @@ export const toSiteIdentity = (dto: SiteIdentityDto): SiteIdentity => ({
   name: dto.name,
   tagline: dto.tagline,
   logo: dto.logo,
+  shareImage: dto.shareImage,
+  icon: dto.icon && {
+    png32: dto.icon.png32,
+    png180: dto.icon.png180,
+    png192: dto.icon.png192,
+    png512: dto.icon.png512,
+  },
   defaultColorScheme: dto.defaultColorScheme,
   theme:
     dto.theme && isHexColors(dto.theme.light) && isHexColors(dto.theme.dark)

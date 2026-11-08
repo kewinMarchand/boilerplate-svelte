@@ -26,11 +26,23 @@ export interface SiteTheme {
   dark: ThemeColors
 }
 
-/** Habillage du site, administré dans l'API (section 22 de la spec commune). */
+/** Favicons en PNG tirés de l'icône saisie dans l'admin, adresses absolues. */
+export interface SiteIcon {
+  png32: string
+  png180: string
+  png192: string
+  png512: string
+}
+
+/** Habillage du site, administré dans l'API (sections 22 et 26 de la spec commune). */
 export interface SiteIdentity {
   name: string
   tagline: string
   logo: ImageView | null
+  /** `null` : `og-image.jpg` du site reste l'image de partage par défaut. */
+  shareImage: ImageView | null
+  /** `null` : les favicons du site restent. */
+  icon: SiteIcon | null
   defaultColorScheme: ColorScheme
   /** `null` : les jetons de boilerplates-ui restent tels quels. */
   theme: SiteTheme | null
@@ -41,6 +53,8 @@ export const FALLBACK_IDENTITY: SiteIdentity = {
   name: SITE.name,
   tagline: SITE.description,
   logo: null,
+  shareImage: null,
+  icon: null,
   defaultColorScheme: 'auto',
   theme: null,
 }

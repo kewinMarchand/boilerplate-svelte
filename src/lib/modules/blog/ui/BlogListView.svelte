@@ -1,20 +1,21 @@
 <script lang="ts">
   import { BLOG_NAVIGATION } from '#lib/shared/config'
+  import { resolveHref } from '#lib/shared/routing'
   import { absoluteUrl } from '#lib/shared/seo'
-  import { Alert, Button, Icon, Skeleton } from '#lib/shared/ui/kit'
+  import { Alert, Button, Chip, Icon, Skeleton } from '#lib/shared/ui/kit'
   import { PageHeader } from '#lib/shared/ui/layout'
 
-  import { articleHref } from '../domain/article'
+  import { articleHref, blogSectionHref } from '../domain/article'
   import BlogCard from './BlogCard.svelte'
   import { useBlogRetry } from './hooks/useBlogRetry.svelte'
 
   import type { Article } from '../domain/article'
 
-  interface Props {
-    blog: Article.Blog
-  }
+  type Props = Article.BlogPage
 
-  const { blog }: Props = $props()
+  const { blog, sections, activeSection }: Props = $props()
+
+  const sectionLinks = $derived([{ slug: undefined, name: 'Toutes' }, ...sections])
 
   const blogRetry = useBlogRetry(() => blog)
 
@@ -42,6 +43,22 @@
   description="Tous les articles du blog : accessibilité, carrousel sans dépendance, performances et choix techniques, du plus récent au plus ancien."
   {seo}
 />
+
+{#if sections.length > 0}
+  <nav aria-label="Rubriques" class="mb-6">
+    <ul class="bui-chip-list">
+      {#each sectionLinks as link (link.slug ?? '')}
+        <li>
+          <Chip
+            href={resolveHref(blogSectionHref(link.slug))}
+            aria-current={link.slug === activeSection ? 'page' : undefined}
+            data-testid="blog-section-link">{link.name}</Chip
+          >
+        </li>
+      {/each}
+    </ul>
+  </nav>
+{/if}
 
 <div aria-live="polite">
   {#if blogRetry.status === 'pending'}

@@ -53,6 +53,62 @@ test.describe('Fiche produit', () => {
     await expect(page.getByTestId('product-attributes')).toHaveCount(0)
   })
 
+  test('affiche une galerie : vignettes nommées, la première affichée', async ({ page }) => {
+    await page.goto('/produit/strelitzia-reginae')
+
+    const gallery = page.getByTestId('product-gallery')
+    const thumbs = gallery.getByTestId('product-gallery-thumb')
+    await expect(thumbs).toHaveCount(4)
+    await expect(thumbs.first()).toHaveAccessibleName("Voir l'image 1 sur 4")
+    await expect(thumbs.first()).toHaveAttribute('aria-current', 'true')
+    await expect(gallery.locator('img').first()).toHaveAttribute('fetchpriority', 'high')
+    await expect(thumbs.first().locator('img')).toHaveAttribute('loading', 'lazy')
+  })
+
+  test('change l’image affichée au clic sur une vignette', async ({ page }) => {
+    await page.goto(PRODUCT)
+    const gallery = page.getByTestId('product-gallery')
+    const displayed = gallery.locator('img').first()
+    const thumbs = gallery.getByRole('button')
+    const before = await displayed.getAttribute('src')
+
+    await thumbs.nth(2).click()
+
+    await expect(thumbs.nth(2)).toHaveAttribute('aria-current', 'true')
+    await expect(thumbs.first()).not.toHaveAttribute('aria-current')
+    await expect(displayed).not.toHaveAttribute('src', before ?? '')
+    await expect(displayed).toHaveAttribute(
+      'src',
+      (await thumbs.nth(2).locator('img').getAttribute('src')) ?? '',
+    )
+  })
+
+  test('passe d’une vignette à l’autre avec les flèches du clavier', async ({ page }) => {
+    await page.goto(PRODUCT)
+    const thumbs = page.getByTestId('product-gallery').getByRole('button')
+
+    await thumbs.first().focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(thumbs.nth(1)).toBeFocused()
+    await expect(thumbs.nth(1)).toHaveAttribute('aria-current', 'true')
+
+    await page.keyboard.press('ArrowLeft')
+    await page.keyboard.press('ArrowLeft')
+    await expect(thumbs.nth(2)).toBeFocused()
+    await expect(thumbs.nth(2)).toHaveAttribute('aria-current', 'true')
+  })
+
+  test('n’a pas de galerie sans images supplémentaires', async ({ page }) => {
+    await page.goto('/produit/monstera-thai-constellation')
+
+    await expect(page.getByTestId('product-title')).toBeVisible()
+    await expect(page.getByTestId('product-gallery')).toHaveCount(0)
+    await expect(page.getByTestId('product-page').locator('img').first()).toHaveAttribute(
+      'fetchpriority',
+      'high',
+    )
+  })
+
   test('expose ses données structurées de produit', async ({ page }) => {
     await page.goto(PRODUCT)
 
@@ -88,5 +144,20 @@ test.describe('Fiche produit', () => {
     const response = await page.goto('/produit/produit-inconnu')
 
     expect(response?.status()).toBe(404)
+  })
+})
+
+test.describe('Fiche produit sans JavaScript', () => {
+  test.use({ javaScriptEnabled: false })
+
+  test('les vignettes de la galerie sont des liens vers l’image en grand', async ({ page }) => {
+    await page.goto(PRODUCT)
+    const thumbs = page.getByTestId('product-gallery-thumb')
+
+    await expect(thumbs).toHaveCount(3)
+    await expect(page.getByTestId('product-gallery').getByRole('button')).toHaveCount(0)
+    for (const thumb of await thumbs.all()) {
+      await expect(thumb).toHaveAttribute('href', /^https?:\/\/.+\.webp$/)
+    }
   })
 })

@@ -25,6 +25,49 @@ test.describe('Liste des articles', () => {
     await expect(page.getByTestId('blog-error')).toHaveCount(0)
   })
 
+  test('les cartes portent leur rubrique en sur-titre, sur la liste et sur l’accueil', async ({
+    page,
+  }) => {
+    await page.goto('/blog')
+    await expect(page.getByTestId('blog-card').getByTestId('article-section')).toHaveText([
+      'Actualités',
+      'Conseils',
+      'Conseils',
+    ])
+
+    await page.goto('/')
+    await expect(
+      page.getByTestId('home-blog-card').first().getByTestId('article-section'),
+    ).toHaveText('Actualités')
+  })
+
+  test('filtre les articles par rubrique, état dans l’URL', async ({ page }) => {
+    await page.goto('/blog')
+    const nav = page.getByRole('navigation', { name: 'Rubriques' })
+    const links = nav.getByTestId('blog-section-link')
+
+    await expect(links).toHaveText(['Toutes', 'Conseils', 'Actualités'])
+    await expect(links.first()).toHaveAttribute('aria-current', 'page')
+
+    await links.nth(1).click()
+
+    await expect(page).toHaveURL(/\/blog\?rubrique=conseils$/)
+    await expect(page.getByTestId('blog-card')).toHaveCount(2)
+    await expect(links.nth(1)).toHaveAttribute('aria-current', 'page')
+    await expect(links.first()).not.toHaveAttribute('aria-current')
+
+    await links.first().click()
+    await expect(page).toHaveURL(/\/blog$/)
+    await expect(page.getByTestId('blog-card')).toHaveCount(3)
+  })
+
+  test('une rubrique inconnue donne la liste vide', async ({ page }) => {
+    await page.goto('/blog?rubrique=inconnue')
+
+    await expect(page.getByTestId('blog-empty')).toBeVisible()
+    await expect(page.getByTestId('blog-section-link')).toHaveCount(3)
+  })
+
   test('une carte ouvre sa fiche', async ({ page }) => {
     await page.goto('/blog')
 
@@ -58,6 +101,13 @@ test.describe('Liste des articles, API sans données (X-Scenario: empty)', () =>
     await expect(page.getByTestId('blog-empty')).toBeVisible()
     await expect(page.getByTestId('blog-list')).toHaveCount(0)
     await expect(page.getByTestId('blog-error')).toHaveCount(0)
+  })
+
+  test('n’affiche pas de filtre sans rubrique', async ({ page }) => {
+    await page.goto('/blog')
+
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Blog')
+    await expect(page.getByRole('navigation', { name: 'Rubriques' })).toHaveCount(0)
   })
 })
 

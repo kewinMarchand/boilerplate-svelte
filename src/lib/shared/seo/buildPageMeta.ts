@@ -1,6 +1,8 @@
 import { SITE } from '#lib/shared/config'
+import { largestWebp } from '#lib/shared/ui/kit/image'
 
 import type { Seo } from './seo'
+import type { SiteIdentity } from '#lib/shared/config'
 
 export const DEFAULT_SHARE_IMAGE: Seo.Image = {
   path: '/og-image.jpg',
@@ -22,13 +24,17 @@ export const buildBreadcrumbJsonLd = (items: Seo.BreadcrumbItem[]): Seo.JsonLd =
   })),
 })
 
-export const buildHomeJsonLd = (siteName: string): Seo.JsonLd[] => [
+/** Logo de l'organisation : l'icône 512 px saisie dans l'admin, sinon celle du site. */
+export const buildHomeJsonLd = ({
+  name: siteName,
+  icon,
+}: Pick<SiteIdentity, 'name' | 'icon'>): Seo.JsonLd[] => [
   {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: siteName,
     url: absoluteUrl('/'),
-    logo: absoluteUrl('/icon-512.png'),
+    logo: icon?.png512 ?? absoluteUrl('/icon-512.png'),
     email: SITE.publisher.email,
   },
   {
@@ -40,18 +46,36 @@ export const buildHomeJsonLd = (siteName: string): Seo.JsonLd[] => [
   },
 ]
 
-export const buildPageMeta = (input: Seo.Input, siteName: string): Seo.Meta => {
-  const image = input.image ?? DEFAULT_SHARE_IMAGE
+/** Image de partage par défaut : celle de l'identité du site si l'admin en a saisi une, sinon celle du site. */
+const defaultShareImage = ({
+  name,
+  shareImage,
+}: Pick<SiteIdentity, 'name' | 'shareImage'>): Seo.Image =>
+  shareImage
+    ? {
+        path: largestWebp(shareImage),
+        width: shareImage.width,
+        height: shareImage.height,
+        alt: shareImage.alt || name,
+      }
+    : DEFAULT_SHARE_IMAGE
+
+export const buildPageMeta = (
+  input: Seo.Input,
+  identity: Pick<SiteIdentity, 'name' | 'shareImage'>,
+): Seo.Meta => {
+  const siteName = identity.name
+  const image = input.image ?? defaultShareImage(identity)
   const breadcrumbJsonLd = input.breadcrumb ? [buildBreadcrumbJsonLd(input.breadcrumb)] : []
 
   return {
-    title: input.title ? `${input.title} · ${siteName}` : siteName,
-    description: input.description,
+    title: input.metaTitle || (input.title ? `${input.title} · ${siteName}` : siteName),
+    description: input.metaDescription || input.description,
     canonical: absoluteUrl(input.canonicalPath ?? input.path),
     robots: input.noindex ? 'noindex, follow' : 'index, follow',
     siteName,
     locale: SITE.locale,
-    ogTitle: input.title ?? siteName,
+    ogTitle: input.metaTitle || (input.title ?? siteName),
     image: { ...image, url: absoluteUrl(image.path) },
     jsonLd: [...breadcrumbJsonLd, ...(input.jsonLd ?? [])],
     prev: input.prevPath && absoluteUrl(input.prevPath),

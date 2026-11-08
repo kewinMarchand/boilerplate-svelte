@@ -39,6 +39,11 @@ export declare namespace Catalog {
     /** Paragraphes de la description, vide si l'admin n'en a pas écrit. */
     description: string[]
     attributes: ProductAttribute[]
+    /** Images de la galerie, sans l'image principale ; vide si aucune. */
+    gallery: ImageView[]
+    /** Titre et description pour les moteurs de recherche, vides si l'admin n'en a pas saisi. */
+    metaTitle: string
+    metaDescription: string
   }
 
   /** Attribut configuré dans l'admin et renseigné sur le produit : `value` est le libellé affiché. */

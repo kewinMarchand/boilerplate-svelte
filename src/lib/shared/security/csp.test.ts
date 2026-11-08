@@ -9,6 +9,7 @@ describe('siteCsp', () => {
     const csp = siteCsp({ apiUrl: 'http://localhost:8091' })
     expect(csp).toContain("connect-src 'self' http://localhost:8091")
     expect(csp).toContain("img-src 'self' data: https: http://localhost:8091")
+    expect(csp).toContain("media-src 'self' http://localhost:8091")
     expect(csp).toContain('report-uri /api/csp-report')
     expect(csp).not.toContain('matomo')
     expect(csp).not.toContain('style-src-elem')

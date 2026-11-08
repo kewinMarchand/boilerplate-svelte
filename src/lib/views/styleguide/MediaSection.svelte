@@ -20,6 +20,7 @@
     excerpt: 'Illustration, titre, date de publication et extrait.',
     image: { ...PHOTO, alt: '' },
     publishedAt: '2026-10-01',
+    section: { slug: 'exemple', name: 'Rubrique' },
   }
 
   const PRODUCT = {

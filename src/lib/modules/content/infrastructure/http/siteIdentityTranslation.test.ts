@@ -23,13 +23,30 @@ const LOGO = {
   src: '/logo-400.webp',
 }
 
+const ICON = {
+  png32: 'http://api/icon-32.png',
+  png180: 'http://api/icon-180.png',
+  png192: 'http://api/icon-192.png',
+  png512: 'http://api/icon-512.png',
+}
+
+const SHARE_IMAGE = {
+  alt: 'Serre tropicale',
+  width: 1200,
+  height: 630,
+  sources: [{ type: 'image/webp' as const, srcset: 'http://api/share-1200.webp 1200w' }],
+  src: 'http://api/share-1200.webp',
+}
+
 describe('toSiteIdentity', () => {
-  it('garde la configuration du modèle : ni logo ni couleurs', () => {
+  it('garde la configuration du modèle : ni logo, ni image de partage, ni icône, ni couleurs', () => {
     expect(
       toSiteIdentity({
         name: 'Boilerplate',
         tagline: 'Modèle de site.',
         logo: null,
+        shareImage: null,
+        icon: null,
         defaultColorScheme: 'auto',
         theme: null,
       }),
@@ -37,9 +54,26 @@ describe('toSiteIdentity', () => {
       name: 'Boilerplate',
       tagline: 'Modèle de site.',
       logo: null,
+      shareImage: null,
+      icon: null,
       defaultColorScheme: 'auto',
       theme: null,
     })
+  })
+
+  it('traduit l’image de partage et les favicons', () => {
+    const identity = toSiteIdentity({
+      name: 'Oraki',
+      tagline: '',
+      logo: null,
+      shareImage: SHARE_IMAGE,
+      icon: ICON,
+      defaultColorScheme: 'auto',
+      theme: null,
+    })
+
+    expect(identity.shareImage).toEqual(SHARE_IMAGE)
+    expect(identity.icon).toEqual(ICON)
   })
 
   it('traduit le logo, le thème par défaut et les jetons clair et sombre', () => {
@@ -50,6 +84,8 @@ describe('toSiteIdentity', () => {
         name: 'Oraki',
         tagline: 'Plantes rares.',
         logo: LOGO,
+        shareImage: null,
+        icon: null,
         defaultColorScheme: 'dark',
         theme: { light: TOKENS, dark },
       }),
@@ -57,6 +93,8 @@ describe('toSiteIdentity', () => {
       name: 'Oraki',
       tagline: 'Plantes rares.',
       logo: LOGO,
+      shareImage: null,
+      icon: null,
       defaultColorScheme: 'dark',
       theme: { light: TOKENS, dark },
     })
@@ -67,6 +105,8 @@ describe('toSiteIdentity', () => {
       name: 'Oraki',
       tagline: '',
       logo: null,
+      shareImage: null,
+      icon: null,
       defaultColorScheme: 'auto',
       theme: { light: { ...TOKENS, primary: 'red}</style>' }, dark: TOKENS },
     })

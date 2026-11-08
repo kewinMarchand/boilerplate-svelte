@@ -9,20 +9,28 @@
   import type { Article } from '#lib/modules/blog'
   import type { Catalog } from '#lib/modules/catalog'
   import type { SiteIdentity } from '#lib/shared/config'
+  import type { Seo } from '#lib/shared/seo'
 
   interface Props {
     blog: Article.Blog
     featured: Catalog.Featured
     identity: SiteIdentity
+    pageMeta: Seo.Override | undefined
   }
 
-  const { blog, featured, identity }: Props = $props()
+  const { blog, featured, identity, pageMeta }: Props = $props()
 </script>
 
 <SeoHead
   meta={buildPageMeta(
-    { description: identity.tagline, path: '/', jsonLd: buildHomeJsonLd(identity.name) },
-    identity.name,
+    {
+      description: identity.tagline,
+      metaTitle: pageMeta?.title,
+      metaDescription: pageMeta?.description,
+      path: '/',
+      jsonLd: buildHomeJsonLd(identity),
+    },
+    identity,
   )}
 />
 

@@ -7,6 +7,7 @@ import {
   shouldReportError,
 } from '#lib/shared/observability/index.server'
 import { announceStartup, buildSiteCsp, CSP_HEADER } from '#lib/shared/security/index.server'
+import { buildIconLinks } from '#lib/shared/seo/icons'
 import { buildThemeCss } from '#lib/shared/theme/themeStyle'
 import { A11Y_MODE_SCRIPT } from '#lib/shared/ui/a11y-mode'
 import { COLOR_SCHEME_SCRIPT } from '#lib/shared/ui/color-scheme'
@@ -46,6 +47,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     transformPageChunk: ({ html }) =>
       html
         .replace('%color.scheme%', identity.defaultColorScheme)
+        .replace('%site.icons%', buildIconLinks(identity.icon))
         .replace(
           '%boot.script%',
           themeCss ? `${BOOT_SCRIPT}<style>${themeCss}</style>` : BOOT_SCRIPT,

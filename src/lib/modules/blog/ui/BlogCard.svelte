@@ -32,6 +32,9 @@
     </div>
   {/if}
   <div class={['bui-card__body', featured && 'md:flex-none']}>
+    {#if article.section}
+      <p class="article-overline" data-testid="article-section">{article.section.name}</p>
+    {/if}
     <svelte:element this={`h${headingLevel}`} class="bui-card__title">
       <a href={resolveHref(articleHref(article.slug))} class="blog-card-link">{article.title}</a>
     </svelte:element>

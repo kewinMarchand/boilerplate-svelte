@@ -70,6 +70,40 @@ test.describe('Fiche article', () => {
     expect(types).toEqual(expect.arrayContaining(['BlogPosting', 'BreadcrumbList']))
   })
 
+  test('propose la version audio, avec sa durée et son intervenant, sans autolecture', async ({
+    page,
+  }) => {
+    await page.goto(ARTICLE)
+    const audio = page.getByTestId('article-audio')
+
+    await expect(audio).toHaveAttribute('controls', '')
+    await expect(audio).toHaveAttribute('preload', 'none')
+    await expect(audio).not.toHaveAttribute('autoplay')
+    await expect(audio.locator('source')).toHaveAttribute('src', /^https?:\/\/.+\.mp3$/)
+    const figure = page.locator('figure', { has: audio })
+    await expect(figure).toContainText('4 s')
+    await expect(figure).toContainText('Présenté par Hina Teriierooiterai')
+    expect(await audio.evaluate((element: HTMLAudioElement) => element.paused)).toBe(true)
+  })
+
+  test('affiche la rubrique et le format sous le titre', async ({ page }) => {
+    await page.goto('/blog/pourquoi-rendre-le-contenu-cote-serveur')
+    const article = page.getByTestId('article-page')
+
+    await expect(article.getByTestId('article-section')).toHaveText('Conseils')
+    await expect(article.getByTestId('article-format')).toHaveText('Guide')
+    await expect(page.getByTestId('article-audio')).toHaveCount(0)
+  })
+
+  test('sans format ni audio, n’affiche que la rubrique', async ({ page }) => {
+    await page.goto('/blog/le-mode-accessibilite-renforcee')
+    const article = page.getByTestId('article-page')
+
+    await expect(article.getByTestId('article-section')).toHaveText('Actualités')
+    await expect(article.getByTestId('article-format')).toHaveCount(0)
+    await expect(page.getByTestId('article-audio')).toHaveCount(0)
+  })
+
   test('répond 404 pour un article inconnu', async ({ page }) => {
     const response = await page.goto('/blog/article-inconnu')
 

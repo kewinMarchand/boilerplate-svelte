@@ -20,8 +20,20 @@
 
   const path = $derived(toAppPath(page.url.pathname))
   const breadcrumb = $derived(buildBreadcrumb({ label: title, path }, parents))
+  const override = $derived(page.data.pageMetas[path])
   const meta = $derived(
-    buildPageMeta({ ...seo, title, description, path, breadcrumb }, page.data.siteIdentity.name),
+    buildPageMeta(
+      {
+        metaTitle: override?.title,
+        metaDescription: override?.description,
+        ...seo,
+        title,
+        description,
+        path,
+        breadcrumb,
+      },
+      page.data.siteIdentity,
+    ),
   )
 </script>
 

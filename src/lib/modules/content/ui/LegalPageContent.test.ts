@@ -5,7 +5,7 @@ import LegalPageContent from './LegalPageContent.svelte'
 vi.mock('$app/state', () => ({
   page: {
     url: new URL('http://localhost/donnees-personnelles'),
-    data: { siteIdentity: { name: 'Boilerplate' } },
+    data: { siteIdentity: { name: 'Boilerplate', shareImage: null }, pageMetas: {} },
   },
 }))
 

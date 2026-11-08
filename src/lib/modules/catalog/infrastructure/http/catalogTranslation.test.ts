@@ -181,6 +181,9 @@ describe('toProductDetail', () => {
       categoryPath: [{ slug: 'palmiers', name: 'Palmiers' }],
       description: '',
       attributes: [],
+      gallery: [],
+      metaTitle: '',
+      metaDescription: '',
     })
 
     expect(detail.description).toEqual([])
@@ -200,6 +203,9 @@ describe('toProductDetail', () => {
       categoryPath: [{ slug: 'palmiers', name: 'Palmiers' }],
       description: 'Rustique.\n\n  \nRésiste au vent,\naux embruns.',
       attributes: [],
+      gallery: [],
+      metaTitle: '',
+      metaDescription: '',
     })
 
     expect(detail.description).toEqual(['Rustique.', 'Résiste au vent,\naux embruns.'])
@@ -236,11 +242,44 @@ describe('toProductDetail', () => {
           unit: 'cm',
         },
       ],
+      gallery: [],
+      metaTitle: '',
+      metaDescription: '',
     })
 
     expect(detail.attributes).toEqual([
       { code: 'feuillage', label: 'Feuillage', value: 'Persistant', unit: null },
       { code: 'hauteur-adulte', label: 'Hauteur adulte', value: '1200', unit: 'cm' },
     ])
+  })
+  it('garde la galerie dans l’ordre et les métadonnées saisies', () => {
+    const image = (name: string) => ({
+      alt: name,
+      width: 800,
+      height: 800,
+      sources: [{ type: 'image/webp' as const, srcset: `http://api/${name}-800.webp 800w` }],
+      src: `http://api/${name}-800.webp`,
+    })
+    const detail = toProductDetail({
+      id: 1,
+      slug: 'palmier-nain',
+      name: 'Palmier nain',
+      categorySlug: 'palmiers',
+      price: 4490,
+      exposure: 'soleil',
+      size: 'M',
+      inStock: true,
+      image: image('principale'),
+      categoryPath: [{ slug: 'palmiers', name: 'Palmiers' }],
+      description: '',
+      attributes: [],
+      gallery: [image('feuille'), image('tronc')],
+      metaTitle: 'Palmier nain : rustique et compact',
+      metaDescription: 'Un palmier qui tient sur un balcon.',
+    })
+
+    expect(detail.gallery.map(({ alt }) => alt)).toEqual(['feuille', 'tronc'])
+    expect(detail.metaTitle).toBe('Palmier nain : rustique et compact')
+    expect(detail.metaDescription).toBe('Un palmier qui tient sur un balcon.')
   })
 })

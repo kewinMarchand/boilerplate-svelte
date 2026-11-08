@@ -1,14 +1,23 @@
 import { ApiError } from '#lib/shared/api/client'
 import { serverApiClient } from '#lib/shared/api/client.server'
 
-import { toArticle, toArticleDetail } from './http/articleTranslation'
+import { toArticle, toArticleDetail, toSections } from './http/articleTranslation'
 
 import type { Article } from '../domain/article'
 
-export const findLatestArticles = async (): Promise<Article.Entity[]> => {
-  const { data, response } = await serverApiClient().GET('/api/articles')
+/** `section` : slug de rubrique ; inconnu de l'API, la liste est vide. */
+export const findLatestArticles = async (section?: string): Promise<Article.Entity[]> => {
+  const { data, response } = await serverApiClient().GET('/api/articles', {
+    params: { query: section ? { section } : {} },
+  })
   if (!data) throw new ApiError(response)
   return data.map(toArticle)
+}
+
+export const findSections = async (): Promise<Article.Term[]> => {
+  const { data, response } = await serverApiClient().GET('/api/article-sections')
+  if (!data) throw new ApiError(response)
+  return toSections(data)
 }
 
 /** `null` si l'API ne connaît pas l'article (404). */

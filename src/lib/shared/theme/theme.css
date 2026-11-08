@@ -126,6 +126,10 @@
     @apply mb-2 text-overline font-semibold tracking-wide uppercase;
   }
 
+  .article-overline {
+    @apply text-overline font-semibold tracking-wide text-primary uppercase;
+  }
+
   .carousel-viewport {
     @apply snap-x snap-mandatory overflow-x-auto;
 
