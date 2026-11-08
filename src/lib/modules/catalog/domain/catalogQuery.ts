@@ -72,6 +72,16 @@ export const parseCatalogQuery = (params: URLSearchParams): Catalog.Query => {
   }
 }
 
+export const PRICE_SORTS: readonly Catalog.Sort[] = ['prix-asc', 'prix-desc']
+
+/** Vente en ligne coupée : filtre et tris par prix ignorés, comme une valeur invalide. */
+export const withoutPrices = (query: Catalog.Query): Catalog.Query => ({
+  ...query,
+  priceMin: undefined,
+  priceMax: undefined,
+  sort: PRICE_SORTS.includes(query.sort) ? 'pertinence' : query.sort,
+})
+
 export const serializeCatalogQuery = (query: Catalog.Query): string => {
   const params = new URLSearchParams()
   query.exposures.forEach((value) => params.append('exposition', value))

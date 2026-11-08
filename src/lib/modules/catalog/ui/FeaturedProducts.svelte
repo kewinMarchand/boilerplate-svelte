@@ -9,9 +9,10 @@
 
   interface Props {
     featured: Catalog.Featured
+    showPrice: boolean
   }
 
-  const { featured }: Props = $props()
+  const { featured, showPrice }: Props = $props()
 
   const titleId = $props.id()
   const slides = $derived(
@@ -19,7 +20,7 @@
       ? featured.products.map((product) => ({
           id: product.id,
           title: product.name,
-          text: formatPrice(product.price),
+          ...(showPrice && { text: formatPrice(product.price) }),
           image: product.image,
           href: productHref(product.slug),
         }))

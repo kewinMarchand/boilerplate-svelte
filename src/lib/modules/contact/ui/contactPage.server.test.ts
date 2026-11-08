@@ -1,6 +1,8 @@
+import { findInquiryProduct } from '../infrastructure/findInquiryProduct'
 import { sendContactMessage } from '../infrastructure/sendContactMessage'
-import { contactActions } from './contactPage.server'
+import { contactActions, loadContactPage } from './contactPage.server'
 
+vi.mock('../infrastructure/findInquiryProduct', () => ({ findInquiryProduct: vi.fn() }))
 vi.mock('../infrastructure/sendContactMessage', () => ({
   sendContactMessage: vi.fn(async () => ({ status: 'sent' })),
 }))
@@ -44,5 +46,44 @@ describe('contactActions', () => {
       status: 422,
       data: { form: { errors: { name: ['Votre nom ne doit pas dépasser 255 caractères.'] } } },
     })
+  })
+})
+
+describe('loadContactPage', () => {
+  const MONSTERA = { slug: 'monstera-deliciosa', name: 'Monstera deliciosa' }
+
+  it('prépare une demande de renseignement sur le produit de l’URL', async () => {
+    vi.mocked(findInquiryProduct).mockResolvedValueOnce(MONSTERA)
+
+    const page = await loadContactPage(
+      new URL('http://localhost/contact?produit=monstera-deliciosa'),
+    )
+
+    expect(findInquiryProduct).toHaveBeenLastCalledWith('monstera-deliciosa')
+    expect(page.product).toEqual(MONSTERA)
+    expect(page.form.data.product).toBe('monstera-deliciosa')
+    expect(page.form.errors).toEqual({})
+  })
+
+  it.each([
+    ['inconnu de l’API', () => vi.mocked(findInquiryProduct).mockResolvedValueOnce(null)],
+    [
+      'API en erreur',
+      () => vi.mocked(findInquiryProduct).mockRejectedValueOnce(new Error('panne')),
+    ],
+  ])('retombe sur un message simple, produit %s', async (_, arrange) => {
+    arrange()
+
+    const page = await loadContactPage(new URL('http://localhost/contact?produit=inconnu'))
+
+    expect(page.product).toBeNull()
+    expect(page.form.data.product).toBeUndefined()
+  })
+
+  it('n’interroge pas l’API sans produit dans l’URL', async () => {
+    vi.mocked(findInquiryProduct).mockClear()
+
+    expect((await loadContactPage(new URL('http://localhost/contact'))).product).toBeNull()
+    expect(findInquiryProduct).not.toHaveBeenCalled()
   })
 })

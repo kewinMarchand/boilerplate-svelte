@@ -13,7 +13,7 @@ describe('ContactForm', () => {
       { name: 'Ada', email: 'ada', message: 'Bonjour à tous' },
       zod4(contactSchema),
     )
-    render(ContactForm, { data })
+    render(ContactForm, { data, product: null })
 
     const email = screen.getByTestId('contact-email')
     expect(email).toHaveAttribute('aria-invalid', 'true')
@@ -24,9 +24,25 @@ describe('ContactForm', () => {
   it('confirme l’envoi quand le serveur renvoie un succès', async () => {
     const data = await superValidate<Contact.FormValues, Contact.FormMessage>(zod4(contactSchema))
     data.message = { status: 'success' }
-    render(ContactForm, { data })
+    render(ContactForm, { data, product: null })
 
     expect(screen.getByTestId('contact-success')).toBeInTheDocument()
     expect(screen.queryByTestId('contact-error')).not.toBeInTheDocument()
+  })
+
+  it('envoie le produit d’une demande de renseignement et adapte la confirmation', async () => {
+    const data = await superValidate<Contact.FormValues, Contact.FormMessage>(zod4(contactSchema))
+    data.message = { status: 'success' }
+    const { container } = render(ContactForm, {
+      data,
+      product: { slug: 'monstera-deliciosa', name: 'Monstera deliciosa' },
+    })
+
+    expect(container.querySelector('input[type="hidden"][name="product"]')).toHaveValue(
+      'monstera-deliciosa',
+    )
+    expect(screen.getByTestId('contact-success')).toHaveTextContent(
+      'Votre demande de renseignement a bien été envoyée.',
+    )
   })
 })

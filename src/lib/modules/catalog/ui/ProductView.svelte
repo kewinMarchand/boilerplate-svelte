@@ -19,11 +19,13 @@
   interface Props {
     product: Catalog.ProductPage
     similarProducts: Catalog.Product[]
-    /** Bouton d'achat, fourni par la couche de routage (module panier). */
+    /** `false` : aucun prix, ni à l'écran ni dans le JSON-LD (vente en ligne coupée). */
+    salesEnabled: boolean
+    /** Bouton d'achat ou lien de demande de renseignement, fourni par la couche de routage. */
     purchase?: Snippet<[Catalog.ProductDetail]>
   }
 
-  const { product, similarProducts, purchase }: Props = $props()
+  const { product, similarProducts, salesEnabled, purchase }: Props = $props()
 
   const IMAGE_SIZES = '(min-width: 1440px) 680px, (min-width: 768px) 50vw, calc(100vw - 32px)'
   const CATALOG: Seo.BreadcrumbItem = { label: CATALOG_NAVIGATION.label, path: CATALOG_ROOT_PATH }
@@ -36,7 +38,7 @@
   ])
   const description = $derived(
     detail
-      ? `${detail.name} : exposition ${EXPOSURE_LABELS[detail.exposure].toLowerCase()}, taille ${detail.size}, ${formatPrice(detail.price)}. ${detail.inStock ? 'En stock' : 'En rupture de stock'}, rayon ${category?.name ?? 'catalogue'}.`
+      ? `${detail.name} : exposition ${EXPOSURE_LABELS[detail.exposure].toLowerCase()}, taille ${detail.size}${salesEnabled ? `, ${formatPrice(detail.price)}` : ''}. ${detail.inStock ? 'En stock' : 'En rupture de stock'}, rayon ${category?.name ?? 'catalogue'}.`
       : 'Fiche produit de notre jardinerie tropicale.',
   )
   const galleryImages = $derived(
@@ -67,13 +69,15 @@
               url: absoluteUrl(productHref(detail.slug)),
               ...(category && { category: category.name }),
               ...(detail.image && { image: largestWebp(detail.image) }),
-              offers: {
-                '@type': 'Offer',
-                url: absoluteUrl(productHref(detail.slug)),
-                priceCurrency: 'EUR',
-                price: (detail.price / 100).toFixed(2),
-                availability: `https://schema.org/${detail.inStock ? 'InStock' : 'OutOfStock'}`,
-              },
+              ...(salesEnabled && {
+                offers: {
+                  '@type': 'Offer',
+                  url: absoluteUrl(productHref(detail.slug)),
+                  priceCurrency: 'EUR',
+                  price: (detail.price / 100).toFixed(2),
+                  availability: `https://schema.org/${detail.inStock ? 'InStock' : 'OutOfStock'}`,
+                },
+              }),
             },
           ],
         }
@@ -99,9 +103,11 @@
         />
       {/if}
       <div>
-        <p class="text-lead font-semibold" data-testid="product-price">
-          {formatPrice(detail.price)}
-        </p>
+        {#if salesEnabled}
+          <p class="text-lead font-semibold" data-testid="product-price">
+            {formatPrice(detail.price)}
+          </p>
+        {/if}
         {#if detail.description.length > 0}
           <div data-testid="product-description">
             {#each detail.description as paragraph, index (index)}
@@ -141,7 +147,7 @@
     </div>
   </article>
   {#if similarProducts.length}
-    <SimilarProducts products={similarProducts} />
+    <SimilarProducts products={similarProducts} showPrice={salesEnabled} />
   {/if}
 {/if}
 

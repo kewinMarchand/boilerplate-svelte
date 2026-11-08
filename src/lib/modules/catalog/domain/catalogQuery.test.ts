@@ -5,6 +5,7 @@ import {
   parseCatalogQuery,
   serializeCatalogQuery,
   withFilter,
+  withoutPrices,
 } from './catalogQuery'
 
 const parse = (search: string) => parseCatalogQuery(new URLSearchParams(search))
@@ -79,5 +80,19 @@ describe('variantes de la liste', () => {
     expect(isFiltered(parse('vue=liste'))).toBe(true)
     expect(isFiltered(parse('en_stock=1'))).toBe(true)
     expect(isFiltered(parse('attr-feuillage=caduc'))).toBe(true)
+  })
+})
+
+describe('withoutPrices', () => {
+  it('ignore le filtre et les tris par prix, garde le reste', () => {
+    expect(withoutPrices(parse('prix_min=10&prix_max=40&tri=prix-desc&taille=M&page=2'))).toEqual({
+      ...DEFAULT_QUERY,
+      sizes: ['M'],
+      page: 2,
+    })
+  })
+
+  it('garde un tri qui ne porte pas sur le prix', () => {
+    expect(withoutPrices(parse('tri=nom')).sort).toBe('nom')
   })
 })

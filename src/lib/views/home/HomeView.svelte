@@ -36,6 +36,6 @@
 
 <Hero name={identity.name} tagline={identity.tagline} />
 
-<FeaturedProducts {featured} />
+<FeaturedProducts {featured} showPrice={identity.salesEnabled} />
 
 <BlogSection {blog} />

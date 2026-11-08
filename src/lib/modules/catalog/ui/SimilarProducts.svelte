@@ -8,16 +8,17 @@
 
   interface Props {
     products: Catalog.Product[]
+    showPrice: boolean
   }
 
-  const { products }: Props = $props()
+  const { products, showPrice }: Props = $props()
 
   const titleId = $props.id()
   const slides = $derived(
     products.map((product) => ({
       id: product.id,
       title: product.name,
-      text: formatPrice(product.price),
+      ...(showPrice && { text: formatPrice(product.price) }),
       image: product.image,
       href: productHref(product.slug),
     })),

@@ -7,6 +7,8 @@ export const contactSchema = z.object({
     .string()
     .trim()
     .min(10, { error: 'Votre message doit contenir au moins 10 caractères.' }),
+  /** Slug du produit d'une demande de renseignement, absent pour un message de contact simple. */
+  product: z.string().optional(),
 })
 
 export declare namespace Contact {
@@ -14,5 +16,11 @@ export declare namespace Contact {
 
   interface FormMessage {
     status: 'success' | 'error'
+  }
+
+  /** Produit d'une demande de renseignement, tel que le contact l'affiche. */
+  interface Product {
+    slug: string
+    name: string
   }
 }

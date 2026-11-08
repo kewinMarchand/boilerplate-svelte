@@ -24,4 +24,5 @@ export const toSiteIdentity = (dto: SiteIdentityDto): SiteIdentity => ({
     dto.theme && isHexColors(dto.theme.light) && isHexColors(dto.theme.dark)
       ? { light: dto.theme.light, dark: dto.theme.dark }
       : null,
+  salesEnabled: dto.salesEnabled,
 })

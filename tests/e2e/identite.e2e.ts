@@ -86,6 +86,7 @@ const startFakeApi = (port: number) => {
     },
     defaultColorScheme: 'dark',
     theme: THEME,
+    salesEnabled: true,
   }
   return createServer(async (request, response) => {
     const url = request.url ?? '/'

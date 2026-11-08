@@ -49,6 +49,7 @@ describe('toSiteIdentity', () => {
         icon: null,
         defaultColorScheme: 'auto',
         theme: null,
+        salesEnabled: true,
       }),
     ).toEqual({
       name: 'Boilerplate',
@@ -58,6 +59,7 @@ describe('toSiteIdentity', () => {
       icon: null,
       defaultColorScheme: 'auto',
       theme: null,
+      salesEnabled: true,
     })
   })
 
@@ -70,6 +72,7 @@ describe('toSiteIdentity', () => {
       icon: ICON,
       defaultColorScheme: 'auto',
       theme: null,
+      salesEnabled: true,
     })
 
     expect(identity.shareImage).toEqual(SHARE_IMAGE)
@@ -88,6 +91,7 @@ describe('toSiteIdentity', () => {
         icon: null,
         defaultColorScheme: 'dark',
         theme: { light: TOKENS, dark },
+        salesEnabled: true,
       }),
     ).toEqual({
       name: 'Oraki',
@@ -97,6 +101,7 @@ describe('toSiteIdentity', () => {
       icon: null,
       defaultColorScheme: 'dark',
       theme: { light: TOKENS, dark },
+      salesEnabled: true,
     })
   })
 
@@ -109,8 +114,27 @@ describe('toSiteIdentity', () => {
       icon: null,
       defaultColorScheme: 'auto',
       theme: { light: { ...TOKENS, primary: 'red}</style>' }, dark: TOKENS },
+      salesEnabled: true,
     })
 
     expect(identity.theme).toBeNull()
   })
+
+  it.each([true, false])(
+    'reprend la vente en ligne telle que l’API la donne (%s)',
+    (salesEnabled) => {
+      const identity = toSiteIdentity({
+        name: 'Oraki',
+        tagline: '',
+        logo: null,
+        shareImage: null,
+        icon: null,
+        defaultColorScheme: 'auto',
+        theme: null,
+        salesEnabled,
+      })
+
+      expect(identity.salesEnabled).toBe(salesEnabled)
+    },
+  )
 })

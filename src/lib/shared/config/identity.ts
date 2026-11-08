@@ -46,6 +46,8 @@ export interface SiteIdentity {
   defaultColorScheme: ColorScheme
   /** `null` : les jetons de boilerplates-ui restent tels quels. */
   theme: SiteTheme | null
+  /** `false` : ni prix ni panier, chaque produit propose une demande de renseignement (section 27). */
+  salesEnabled: boolean
 }
 
 /** Repli quand l'API ne répond pas : la configuration du site. */
@@ -57,4 +59,5 @@ export const FALLBACK_IDENTITY: SiteIdentity = {
   icon: null,
   defaultColorScheme: 'auto',
   theme: null,
+  salesEnabled: true,
 }

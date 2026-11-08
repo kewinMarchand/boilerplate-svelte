@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolveHref } from '#lib/shared/routing'
   import { PageHeader } from '#lib/shared/ui/layout'
 
   import ContactForm from './ContactForm.svelte'
@@ -8,9 +9,11 @@
 
   interface Props {
     form: SuperValidated<Contact.FormValues, Contact.FormMessage>
+    /** Produit d'une demande de renseignement (`?produit=<slug>`), `null` pour un message simple. */
+    product: Contact.Product | null
   }
 
-  const { form }: Props = $props()
+  const { form, product }: Props = $props()
 </script>
 
 <PageHeader
@@ -22,4 +25,10 @@
   Formulaire validé par un schéma zod, envoyé par une action serveur. Il fonctionne aussi sans
   JavaScript.
 </p>
-<ContactForm data={form} />
+{#if product}
+  <p class="mb-6" data-testid="contact-product">
+    Votre demande concerne :
+    <a href={resolveHref(`/produit/${product.slug}`)} class="bui-link">{product.name}</a>
+  </p>
+{/if}
+<ContactForm data={form} {product} />

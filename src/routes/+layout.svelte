@@ -10,7 +10,9 @@
 <Providers>
   <AppShell categoryMenu={data.categoryMenu} identity={data.siteIdentity}>
     {#snippet cartLink()}
-      <CartLink />
+      {#if data.siteIdentity.salesEnabled}
+        <CartLink />
+      {/if}
     {/snippet}
     {@render children()}
   </AppShell>

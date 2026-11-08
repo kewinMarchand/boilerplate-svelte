@@ -4,4 +4,8 @@
   const { data } = $props()
 </script>
 
-<CatalogView query={data.query} result={data.result} />
+<CatalogView
+  query={data.query}
+  result={data.result}
+  salesEnabled={data.siteIdentity.salesEnabled}
+/>

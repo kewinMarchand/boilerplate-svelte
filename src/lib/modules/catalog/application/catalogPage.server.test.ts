@@ -28,7 +28,7 @@ describe('loadCatalogPage', () => {
   it('renvoie la page d’une catégorie connue, avec l’état de recherche lu dans l’URL', async () => {
     vi.mocked(findCatalogListing).mockResolvedValueOnce(LISTING)
 
-    const page = await loadCatalogPage('plantes-interieur', params('tri=nom'))
+    const page = await loadCatalogPage('plantes-interieur', params('tri=nom'), true)
 
     expect(findCatalogListing).toHaveBeenCalledWith(
       ['plantes-interieur'],
@@ -43,21 +43,34 @@ describe('loadCatalogPage', () => {
 
   it('déclare introuvables une catégorie inconnue et une page hors bornes', async () => {
     vi.mocked(findCatalogListing).mockResolvedValueOnce(null)
-    expect(await loadCatalogPage('inconnue', params())).toEqual({ status: 'not-found' })
+    expect(await loadCatalogPage('inconnue', params(), true)).toEqual({ status: 'not-found' })
 
     vi.mocked(findCatalogListing).mockResolvedValueOnce(LISTING)
-    expect(await loadCatalogPage(undefined, params('page=9'))).toEqual({ status: 'not-found' })
+    expect(await loadCatalogPage(undefined, params('page=9'), true)).toEqual({
+      status: 'not-found',
+    })
   })
 
   it('transforme un échec du dépôt en résultat d’erreur affichable', async () => {
     vi.mocked(findCatalogListing).mockRejectedValueOnce(new Error('panne'))
 
-    const page = await loadCatalogPage(undefined, params())
+    const page = await loadCatalogPage(undefined, params(), true)
 
     expect(page).toEqual({
       status: 'ok',
       query: expect.objectContaining({ page: 1 }),
       result: { status: 'error', message: 'Impossible de charger le catalogue pour le moment.' },
     })
+  })
+
+  it('ignore le filtre et le tri par prix quand la vente en ligne est coupée', async () => {
+    vi.mocked(findCatalogListing).mockResolvedValueOnce(LISTING)
+    const search = params('prix_min=10&tri=prix-asc')
+
+    const page = await loadCatalogPage(undefined, search, false)
+
+    const ignored = expect.objectContaining({ priceMin: undefined, sort: 'pertinence' })
+    expect(findCatalogListing).toHaveBeenLastCalledWith([], ignored)
+    expect(page).toMatchObject({ status: 'ok', query: ignored })
   })
 })

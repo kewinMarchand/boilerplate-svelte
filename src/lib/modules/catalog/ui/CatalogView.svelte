@@ -21,9 +21,11 @@
   interface Props {
     query: Catalog.Query
     result: Catalog.Result
+    /** `false` : ni prix, ni filtre, ni tri par prix (vente en ligne coupée). */
+    salesEnabled: boolean
   }
 
-  const { query, result }: Props = $props()
+  const { query, result, salesEnabled }: Props = $props()
 
   const listing = $derived(result.status === 'success' ? result.listing : undefined)
   const chain = $derived(listing?.chain ?? [])
@@ -108,7 +110,7 @@
   {#if listing && isDesktop.current}
     <aside aria-labelledby="catalog-filters-title" class="catalog-aside">
       <h2 id="catalog-filters-title" class="mb-4 text-title font-semibold">Filtres</h2>
-      <CatalogFilters {query} {listing} onsubmit={navigation.submitForm} />
+      <CatalogFilters {query} {listing} {salesEnabled} onsubmit={navigation.submitForm} />
     </aside>
   {/if}
 
@@ -126,7 +128,7 @@
             <Icon name="sliders-horizontal" />
             Filtrer{activeCount > 0 ? ` (${activeCount})` : ''}
           {/snippet}
-          <CatalogFilters {query} {listing} onsubmit={navigation.submitForm} />
+          <CatalogFilters {query} {listing} {salesEnabled} onsubmit={navigation.submitForm} />
           <Button class="mt-6 w-full" onclick={() => (filtersOpen = false)}>
             Voir les {listing.total} produits
           </Button>
@@ -138,6 +140,7 @@
       {path}
       {query}
       total={listing?.total ?? 0}
+      {salesEnabled}
       onSortChange={(sort) => navigation.update({ sort })}
       {filterButton}
     />
@@ -151,6 +154,7 @@
       {status}
       products={listing?.products ?? []}
       view={query.view}
+      {salesEnabled}
       errorMessage={result.status === 'error' ? result.message : undefined}
       onRetry={navigation.retry}
       {clearAction}

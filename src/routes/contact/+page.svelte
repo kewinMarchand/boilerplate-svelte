@@ -4,4 +4,4 @@
   const { data } = $props()
 </script>
 
-<ContactView form={data.form} />
+<ContactView form={data.form} product={data.product} />

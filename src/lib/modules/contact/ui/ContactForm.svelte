@@ -8,15 +8,19 @@
 
   interface Props {
     data: SuperValidated<Contact.FormValues, Contact.FormMessage>
+    product: Contact.Product | null
   }
 
-  const { data }: Props = $props()
+  const { data, product }: Props = $props()
 
   // svelte-ignore state_referenced_locally
   const { form, errors, message, submitting, enhance } = useContactForm(data)
 </script>
 
 <form method="POST" novalidate class="flex max-w-form flex-col gap-4" use:enhance>
+  {#if product}
+    <input type="hidden" name="product" value={product.slug} />
+  {/if}
   <TextField
     name="name"
     label="Nom"
@@ -51,8 +55,12 @@
   <div aria-live="polite">
     {#if $message?.status === 'success'}
       <Alert variant="success" data-testid="contact-success">
-        Merci, votre message a bien été envoyé.
+        {product
+          ? 'Votre demande de renseignement a bien été envoyée.'
+          : 'Merci, votre message a bien été envoyé.'}
       </Alert>
+    {:else if $errors.product}
+      <Alert variant="error">{$errors.product[0]}</Alert>
     {:else if $message?.status === 'error'}
       <Alert variant="error" data-testid="contact-error">
         L'envoi a échoué. Réessayez dans quelques instants.

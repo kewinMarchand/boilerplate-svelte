@@ -18,4 +18,8 @@ describe('loadSiteIdentity', () => {
 
     expect(await loadSiteIdentity()).toEqual(FALLBACK_IDENTITY)
   })
+
+  it('garde la vente en ligne active dans le repli', () => {
+    expect(FALLBACK_IDENTITY.salesEnabled).toBe(true)
+  })
 })

@@ -1,4 +1,4 @@
-import { parseCatalogQuery } from '../domain/catalogQuery'
+import { parseCatalogQuery, withoutPrices } from '../domain/catalogQuery'
 import { parseCategorySlugs } from '../domain/categoryPath'
 import { findCatalogListing } from '../infrastructure/catalogRepository'
 import { CatalogLoadError } from './CatalogLoadError'
@@ -11,13 +11,16 @@ export type CatalogPageLoad =
 /**
  * Cas d'utilisation « afficher une page du catalogue » : lit l'état de recherche, interroge le
  * dépôt, puis décide. Catégorie inconnue ou page au-delà de la dernière : introuvable. Échec du
- * dépôt : résultat en erreur, que l'interface affiche avec une relance.
+ * dépôt : résultat en erreur, que l'interface affiche avec une relance. Vente en ligne coupée :
+ * filtre et tris par prix ignorés.
  */
 export const loadCatalogPage = async (
   rawSlugs: string | undefined,
   searchParams: URLSearchParams,
+  salesEnabled: boolean,
 ): Promise<CatalogPageLoad> => {
-  const query = parseCatalogQuery(searchParams)
+  const parsed = parseCatalogQuery(searchParams)
+  const query = salesEnabled ? parsed : withoutPrices(parsed)
 
   let listing: Catalog.Listing | null
   try {
