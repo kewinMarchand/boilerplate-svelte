@@ -17,8 +17,10 @@ declare global {
       /** Titre et description administrés des pages fixes, par chemin de route. */
       pageMetas: Partial<Record<string, Seo.Override>>
       locale: LocaleContext
-      /** Libellés de la langue de la page, seul dictionnaire envoyé au navigateur. */
-      dictionary: Dictionary
+      /** Libellés communs à toutes les pages (en-tête, pied, page d'erreur), dans la langue de la page. */
+      dictionary: Partial<Dictionary>
+      /** Libellés propres à la page, posés par son `load`. */
+      pageDictionary?: Partial<Dictionary> | undefined
       /** Page détaillée : l'élément dans chaque langue où il existe (sélecteur de langue, hreflang). */
       alternates?: LanguageAlternate[] | undefined
     }

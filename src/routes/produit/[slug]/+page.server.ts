@@ -1,5 +1,7 @@
 import { error } from '@sveltejs/kit'
 
+import { dictionarySections } from '#lib/shared/i18n/index.server'
+
 import {
   loadProduct,
   loadProductTranslations,
@@ -24,6 +26,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     product,
     similarProducts,
     translations,
+    pageDictionary: dictionarySections(locals.locale, [
+      'catalog',
+      'product',
+      'carousel',
+      'contact',
+    ]),
     alternates: product.status === 'success' ? product.product.alternates : undefined,
   }
 }

@@ -12,3 +12,19 @@ const DICTIONARIES: Record<string, Dictionary> = { fr, en }
  */
 export const dictionaryFor = ({ locale, defaultLocale }: LocaleContext): Dictionary =>
   DICTIONARIES[locale] ?? DICTIONARIES[defaultLocale] ?? fr
+
+/**
+ * Sections du dictionnaire de la page qui partent au navigateur : celles que lisent les composants rendus
+ * (le layout envoie les sections communes, chaque page les siennes), jamais le dictionnaire entier.
+ */
+export const dictionarySections = <Section extends keyof Dictionary>(
+  context: LocaleContext,
+  sections: readonly Section[],
+): Pick<Dictionary, Section> => {
+  const dictionary = dictionaryFor(context)
+  // Object.fromEntries perd le lien entre clé et valeur : chaque entrée vient pourtant de `dictionary`
+  return Object.fromEntries(sections.map((section) => [section, dictionary[section]])) as Pick<
+    Dictionary,
+    Section
+  >
+}

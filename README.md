@@ -237,7 +237,7 @@ Un site n'a qu'une langue, le français, tant que l'identité du site (`GET /api
 - chaque lecture de l'API passe `locale=<langue de la page>`, le contact envoie sa langue en `Accept-Language` ;
 - `<html lang>`, canonique, `og:locale`, `hreflang` (et `x-default`), `inLanguage` et sitemap suivent la langue de la page.
 
-Libellés : une clé par texte dans `src/lib/shared/i18n/dictionaries/fr.ts` et `en.ts` (`{nom}` remplacé par `format`, pluriels par `plural`), lue dans un composant par `const t = useDictionary()`. Un lien interne passe par `resolveHref`, qui ajoute le préfixe de la page. Une langue activée sans dictionnaire prend les libellés de la langue par défaut. Pour voir le site bilingue des fixtures : `API_SCENARIO=bilingual` dans `.env`, puis `make build start`.
+Libellés : une clé par texte dans `src/lib/shared/i18n/dictionaries/fr.ts` et `en.ts` (`{nom}` remplacé par `format`, pluriels par `plural`), lue dans un composant par `const t = useDictionary()`. Le navigateur ne reçoit que les sections utiles : celles de l'en-tête, du pied et de la page d'erreur depuis `src/routes/+layout.server.ts` (`LAYOUT_SECTIONS`), celles d'une page depuis son `load` (`pageDictionary: dictionarySections(locals.locale, ['catalog'])`) ; une section lue par un composant doit y figurer. Un lien interne passe par `resolveHref`, qui ajoute le préfixe de la page. Une langue activée sans dictionnaire prend les libellés de la langue par défaut. Pour voir le site bilingue des fixtures : `API_SCENARIO=bilingual` dans `.env`, puis `make build start`.
 
 ### Composants de boilerplates-ui
 

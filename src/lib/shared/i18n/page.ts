@@ -6,10 +6,14 @@ import type { Dictionary } from './dictionaries/dictionary'
 import type { LanguageAlternate, LocaleContext } from './locale'
 
 /**
- * Langue et libellés de la page, posés par le layout racine (`+layout.server.ts`) : le navigateur reçoit le
- * dictionnaire de la page dans ses données. À lire pendant le rendu d'un composant (`page` de `$app/state`).
+ * Libellés de la page : sections communes posées par le layout racine (`+layout.server.ts`, `dictionary`),
+ * sections propres à la page posées par son `load` (`pageDictionary`). À lire pendant le rendu d'un composant
+ * (`page` de `$app/state`).
  */
-export const useDictionary = (): Dictionary => page.data.dictionary
+export const useDictionary = (): Dictionary =>
+  // Contrat vérifié par les e2e de chaque page dans chaque langue : une page envoie les sections que lisent
+  // ses composants, le layout celles de l'en-tête, du pied et de la page d'erreur
+  ({ ...page.data.dictionary, ...page.data.pageDictionary }) as Dictionary
 
 export const useLocale = (): LocaleContext => page.data.locale
 

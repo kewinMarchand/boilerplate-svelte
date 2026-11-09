@@ -1,7 +1,7 @@
 import { en } from './dictionaries/en'
 import { fr } from './dictionaries/fr'
 import { format, plural } from './format'
-import { dictionaryFor } from './index.server'
+import { dictionaryFor, dictionarySections } from './index.server'
 import {
   alternatesByKey,
   languageName,
@@ -36,6 +36,10 @@ describe('dictionnaires', () => {
     expect(dictionaryFor(BILINGUAL)).toBe(en)
     expect(dictionaryFor({ locale: 'de', defaultLocale: 'en', locales: ['en', 'de'] })).toBe(en)
     expect(dictionaryFor({ locale: 'de', defaultLocale: 'it', locales: ['it', 'de'] })).toBe(fr)
+  })
+
+  it('ne donnent au navigateur que les sections demandées', () => {
+    expect(dictionarySections(BILINGUAL, ['cart', 'ui'])).toEqual({ cart: en.cart, ui: en.ui })
   })
 })
 
