@@ -14,7 +14,13 @@
   {#snippet purchase(product)}
     {#if data.siteIdentity.salesEnabled}
       <AddToCartButton
-        item={{ slug: product.slug, name: product.name, price: product.price }}
+        item={{
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          price: product.price,
+          translations: data.translations,
+        }}
         isAvailable={product.inStock}
       />
     {:else}

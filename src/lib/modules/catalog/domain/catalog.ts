@@ -66,6 +66,13 @@ export declare namespace Catalog {
     alternates: Alternate[]
   }
 
+  /** Slug et nom d'un produit dans une langue du site. */
+  interface ProductTranslation {
+    locale: string
+    slug: string
+    name: string
+  }
+
   /** Attribut configuré dans l'admin et renseigné sur le produit : `value` est le libellé affiché. */
   interface ProductAttribute {
     code: string

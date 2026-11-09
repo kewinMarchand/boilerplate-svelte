@@ -1,12 +1,12 @@
 <script lang="ts">
   import { tick } from 'svelte'
 
-  import { format, useDictionary } from '#lib/shared/i18n'
+  import { format, useDictionary, useLocale } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { Button } from '#lib/shared/ui/kit'
   import { PageHeader } from '#lib/shared/ui/layout'
 
-  import { MAX_QUANTITY, totalPrice } from '../domain/cart'
+  import { lineIn, MAX_QUANTITY, totalPrice } from '../domain/cart'
   import { formatPrice } from '../domain/price'
   import { useCart } from './hooks/useCart.svelte'
 
@@ -17,23 +17,24 @@
 
   const cart = useCart()
   const t = useDictionary()
+  const { locale } = useLocale()
   const price = (cents: number) => formatPrice(cents, t.language.tag)
 
   let list: HTMLUListElement | null = null
   let empty: HTMLParagraphElement | null = null
 
   // Sans cela, le focus retombe en haut de la page après un retrait
-  const remove = async (slug: string, index: number) => {
-    cart.remove(slug)
+  const remove = async (id: string, index: number) => {
+    cart.remove(id)
     await tick()
     const buttons = list?.querySelectorAll<HTMLButtonElement>(':scope > li button')
     const target = buttons?.[Math.min(index, cart.lines.length - 1)] ?? empty
     target?.focus()
   }
 
-  const changeQuantity = (slug: string, event: Event & { currentTarget: HTMLInputElement }) => {
+  const changeQuantity = (id: string, event: Event & { currentTarget: HTMLInputElement }) => {
     const quantity = event.currentTarget.valueAsNumber
-    if (!Number.isNaN(quantity)) cart.changeQuantity(slug, quantity)
+    if (!Number.isNaN(quantity)) cart.changeQuantity(id, quantity)
   }
 </script>
 
@@ -49,20 +50,21 @@
     </p>
   {:else}
     <ul bind:this={list} class="grid gap-4">
-      {#each cart.lines as line, index (line.slug)}
+      {#each cart.lines as line, index (line.id)}
+        {@const { slug, name } = lineIn(line, locale)}
         <li class="cart-line" data-testid="cart-line">
-          <a href={resolveHref(productHref(line.slug))} class="bui-link font-semibold">
-            {line.name}
+          <a href={resolveHref(productHref(slug))} class="bui-link font-semibold">
+            {name}
           </a>
           <span>{format(t.cart.unitPrice, { price: price(line.price) })}</span>
           <label class="bui-field">
-            <span class="bui-field__label">{format(t.cart.quantityOf, { name: line.name })}</span>
+            <span class="bui-field__label">{format(t.cart.quantityOf, { name })}</span>
             <input
               type="number"
               min="1"
               max={MAX_QUANTITY}
               value={line.quantity}
-              oninput={(event) => changeQuantity(line.slug, event)}
+              oninput={(event) => changeQuantity(line.id, event)}
               class="bui-field__input"
               data-testid="cart-quantity"
             />
@@ -70,8 +72,8 @@
           <span class="font-semibold">{price(line.price * line.quantity)}</span>
           <Button
             variant="outline"
-            aria-label={format(t.cart.removeItem, { name: line.name })}
-            onclick={() => remove(line.slug, index)}
+            aria-label={format(t.cart.removeItem, { name })}
+            onclick={() => remove(line.id, index)}
             data-testid="cart-remove"
           >
             {t.cart.remove}

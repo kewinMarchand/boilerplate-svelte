@@ -6,5 +6,6 @@ export {
   listProductEntries,
   loadFeaturedProducts,
   loadProduct,
+  loadProductTranslations,
   loadSimilarProducts,
 } from './application/products.server'
