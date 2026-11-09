@@ -10,8 +10,6 @@ import { gotoHydrated, useMode } from './support'
 import type { BrowserContext, Page } from '@playwright/test'
 import type { ChildProcess } from 'node:child_process'
 
-const API_URL = process.env.API_URL || 'http://localhost:8090'
-
 /**
  * Fixtures de l'API (contrat, section 29) : `X-Scenario: bilingual` active `en` après `fr`, avec ces
  * traductions (produit, article, catégories, accroche) ; tout le reste retombe sur le français.
@@ -101,36 +99,22 @@ test.describe('Site bilingue fr, en (API_SCENARIO=bilingual)', () => {
     app?.kill()
   })
 
-  // L'API n'autorise que l'origine du build : le navigateur du test ajoute l'en-tête CORS aux réponses de l'API
-  // appelée depuis la page (tâches). L'envoi du contact est rejoué avec l'origine du build (protection CSRF,
-  // voir vente.e2e.ts).
-  const allowAppOrigin = (context: BrowserContext) =>
-    Promise.all([
-      context.route(`${API_URL}/**`, async (route) => {
-        const response = await route.fetch()
-        await route.fulfill({
-          response,
-          headers: {
-            ...response.headers(),
-            'access-control-allow-origin': appUrl,
-            'access-control-allow-headers': 'content-type, accept, x-scenario',
-          },
-        })
-      }),
-      context.route(`${appUrl}/en/contact**`, async (route) => {
-        if (route.request().method() !== 'POST') return route.continue()
-        const origin = test.info().project.use.baseURL ?? ''
-        return route.fulfill({
-          response: await route.fetch({ headers: { ...route.request().headers(), origin } }),
-        })
-      }),
-    ])
+  // Les deux API autorisent l'origine de ce serveur (3128, mobile 3129) : le navigateur les appelle directement.
+  // L'envoi du contact est rejoué avec l'origine du build (protection CSRF, voir vente.e2e.ts).
+  const replayContactWithBuildOrigin = (context: BrowserContext) =>
+    context.route(`${appUrl}/en/contact**`, async (route) => {
+      if (route.request().method() !== 'POST') return route.continue()
+      const origin = test.info().project.use.baseURL ?? ''
+      return route.fulfill({
+        response: await route.fetch({ headers: { ...route.request().headers(), origin } }),
+      })
+    })
 
   test.beforeEach(async ({ context }) => {
-    await allowAppOrigin(context)
+    await replayContactWithBuildOrigin(context)
   })
 
-  // Une requête encore en vol à la fin du test (tâches chargées dans le navigateur) ne fait pas échouer le suivant
+  // Un envoi encore en vol à la fin du test ne fait pas échouer le suivant
   test.afterEach(async ({ context }) => {
     await context.unrouteAll({ behavior: 'ignoreErrors' })
   })
