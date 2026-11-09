@@ -1,5 +1,5 @@
 import createClient, { createQuerySerializer } from 'openapi-fetch'
-import { API_URL } from '$app/env/public'
+import { API_SCENARIO, API_URL } from '$app/env/public'
 
 import type { paths } from './schema'
 
@@ -20,16 +20,19 @@ export const querySerializer = (query: Record<string, unknown>) =>
   )
 
 /**
- * Client typé de l'API. `X-Scenario` (error, empty) n'a d'effet qu'en dev et en test côté API :
- * le relayer permet aux tests e2e de provoquer les états d'erreur et de liste vide.
+ * Client typé de l'API. `X-Scenario` (error, empty, bilingual) n'a d'effet qu'en dev et en test côté API :
+ * le relayer permet aux tests e2e de provoquer les états d'erreur et de liste vide. À défaut,
+ * `API_SCENARIO` en fixe un pour tous les appels (site bilingue de l'e2e).
  */
-export const createApiClient = (fetch: typeof globalThis.fetch, scenario?: string | null) =>
-  createClient<paths, 'application/json'>({
+export const createApiClient = (fetch: typeof globalThis.fetch, scenario?: string | null) => {
+  const fixedScenario = scenario || API_SCENARIO
+  return createClient<paths, 'application/json'>({
     baseUrl: API_URL,
     fetch,
     querySerializer,
-    headers: scenario ? { 'X-Scenario': scenario } : {},
+    headers: fixedScenario ? { 'X-Scenario': fixedScenario } : {},
   })
+}
 
 export class ApiError extends Error {
   constructor(response: Response) {

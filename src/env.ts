@@ -21,6 +21,12 @@ export const variables = defineEnvVars({
     description:
       'Origine de l’API (8090 API Platform par défaut, 8091 Hono), lue par le serveur et le navigateur',
   },
+  API_SCENARIO: {
+    public: true,
+    schema: optionalText,
+    description:
+      'Scénario de l’API (X-Scenario) fixé pour tous les appels du site, serveur et navigateur (bilingual pour l’e2e bilingue). Vide en production',
+  },
   PUBLIC_SITE_URL: {
     public: true,
     schema: z.url().default('http://localhost:5173'),
