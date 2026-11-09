@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { page } from '$app/state'
-
-  import { isActivePath } from '#lib/shared/config'
+  import { isActivePath, navigationLabel } from '#lib/shared/config'
+  import { useDictionary, usePagePath } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { Button } from '#lib/shared/ui/kit'
 
   import type { NavigationItem } from '#lib/shared/config'
 
-  const { href, label }: NavigationItem = $props()
+  const item: NavigationItem = $props()
 
-  const isActive = $derived(isActivePath(page.url.pathname, href))
+  const t = useDictionary()
+  const isActive = $derived(isActivePath(usePagePath(), item.href))
 </script>
 
-<Button href={resolveHref(href)} variant="nav" aria-current={isActive ? 'page' : undefined}>
-  {label}
+<Button href={resolveHref(item.href)} variant="nav" aria-current={isActive ? 'page' : undefined}>
+  {navigationLabel(item, t)}
 </Button>

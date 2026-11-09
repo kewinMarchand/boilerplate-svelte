@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { BLOG_NAVIGATION } from '#lib/shared/config'
+  import { BLOG_NAVIGATION, navigationLabel } from '#lib/shared/config'
+  import { useDictionary, useLocale } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
-  import { absoluteUrl } from '#lib/shared/seo'
+  import { localizedUrl } from '#lib/shared/seo'
   import { Alert, Button, Chip, Icon, Skeleton } from '#lib/shared/ui/kit'
   import { PageHeader } from '#lib/shared/ui/layout'
 
@@ -15,7 +16,10 @@
 
   const { blog, sections, activeSection }: Props = $props()
 
-  const sectionLinks = $derived([{ slug: undefined, name: 'Toutes' }, ...sections])
+  const t = useDictionary()
+  const locale = useLocale()
+  const blogLabel = navigationLabel(BLOG_NAVIGATION, t)
+  const sectionLinks = $derived([{ slug: undefined, name: t.blog.allSections }, ...sections])
 
   const blogRetry = useBlogRetry(() => blog)
 
@@ -24,28 +28,24 @@
       {
         '@context': 'https://schema.org',
         '@type': 'Blog',
-        name: BLOG_NAVIGATION.label,
-        url: absoluteUrl(BLOG_NAVIGATION.href),
-        inLanguage: 'fr-FR',
+        name: blogLabel,
+        url: localizedUrl(BLOG_NAVIGATION.href, locale),
+        inLanguage: t.language.tag,
         blogPost: (blog.status === 'success' ? blog.articles : []).map((article) => ({
           '@type': 'BlogPosting',
           headline: article.title,
           datePublished: article.publishedAt,
-          url: absoluteUrl(articleHref(article.slug)),
+          url: localizedUrl(articleHref(article.slug), locale),
         })),
       },
     ],
   })
 </script>
 
-<PageHeader
-  title={BLOG_NAVIGATION.label}
-  description="Tous les articles du blog : accessibilité, carrousel sans dépendance, performances et choix techniques, du plus récent au plus ancien."
-  {seo}
-/>
+<PageHeader title={blogLabel} description={t.blog.description} {seo} />
 
 {#if sections.length > 0}
-  <nav aria-label="Rubriques" class="mb-6">
+  <nav aria-label={t.blog.sections} class="mb-6">
     <ul class="bui-chip-list">
       {#each sectionLinks as link (link.slug ?? '')}
         <li>
@@ -66,7 +66,7 @@
       class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
       role="status"
       aria-busy="true"
-      aria-label="Chargement des articles"
+      aria-label={t.blog.loading}
       data-testid="blog-loading"
     >
       {#each [1, 2, 3] as key (key)}
@@ -75,15 +75,13 @@
     </div>
   {:else if blog.status === 'error'}
     <div class="flex flex-col items-start gap-3">
-      <Alert variant="error" data-testid="blog-error">{blog.message}</Alert>
+      <Alert variant="error" data-testid="blog-error">{t.blog.loadError}</Alert>
       <Button variant="outline" onclick={() => void blogRetry.retry()} data-testid="blog-retry"
-        ><Icon name="rotate-cw" />Réessayer
+        ><Icon name="rotate-cw" />{t.blog.retry}
       </Button>
     </div>
   {:else if blog.articles.length === 0}
-    <Alert variant="info" data-testid="blog-empty">
-      Aucun article publié pour l'instant. Revenez bientôt.
-    </Alert>
+    <Alert variant="info" data-testid="blog-empty">{t.blog.empty}</Alert>
   {:else}
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-testid="blog-list">
       {#each blog.articles as article (article.id)}

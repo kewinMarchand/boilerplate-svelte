@@ -48,6 +48,8 @@ export interface SiteIdentity {
   theme: SiteTheme | null
   /** `false` : ni prix ni panier, chaque produit propose une demande de renseignement (section 27). */
   salesEnabled: boolean
+  /** Langues du site, la première est la langue par défaut (section 29). */
+  locales: string[]
 }
 
 /** Repli quand l'API ne répond pas : la configuration du site. */
@@ -60,4 +62,5 @@ export const FALLBACK_IDENTITY: SiteIdentity = {
   defaultColorScheme: 'auto',
   theme: null,
   salesEnabled: true,
+  locales: ['fr'],
 }

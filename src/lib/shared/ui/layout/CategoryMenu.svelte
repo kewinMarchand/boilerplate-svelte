@@ -1,7 +1,8 @@
 <script lang="ts">
   import { afterNavigate } from '$app/navigation'
 
-  import { CATALOG_NAVIGATION } from '#lib/shared/config'
+  import { CATALOG_NAVIGATION, navigationLabel } from '#lib/shared/config'
+  import { useDictionary } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { Icon } from '#lib/shared/ui/kit'
 
@@ -15,6 +16,7 @@
   }
 
   const { nodes }: Props = $props()
+  const t = useDictionary()
 
   const panelId = $props.id()
   const menu = useCascadeMenu(() => nodes)
@@ -87,7 +89,7 @@
     bind:this={toggleButton}
     onclick={menu.toggle}
   >
-    {CATALOG_NAVIGATION.label}
+    {navigationLabel(CATALOG_NAVIGATION, t)}
     <Icon name="chevron-down" class="bui-icon--md" />
   </button>
   {#if menu.open}
@@ -100,7 +102,7 @@
       onkeydown={handlePanelKeydown}
     >
       <a href={resolveHref(CATALOG_NAVIGATION.href)} class="category-menu-all" onclick={menu.close}>
-        Tout le catalogue
+        {t.layout.wholeCatalog}
       </a>
       <div class="flex">
         {#each menu.columns as column, level (level)}

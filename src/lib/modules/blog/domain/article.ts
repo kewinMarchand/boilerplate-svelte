@@ -47,6 +47,14 @@ export declare namespace Article {
     /** Titre et description pour les moteurs de recherche, vides si l'admin n'en a pas saisi. */
     metaTitle: string
     metaDescription: string
+    /** La fiche dans chaque langue où l'article existe ; vide sur un site monolingue. */
+    alternates: Alternate[]
+  }
+
+  /** Chemin d'un élément dans une langue, sans préfixe de langue (sélecteur, hreflang, sitemap). */
+  interface Alternate {
+    locale: string
+    path: AppPath
   }
 
   type Load =

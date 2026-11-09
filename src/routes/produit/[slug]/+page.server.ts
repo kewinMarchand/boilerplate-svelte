@@ -9,5 +9,9 @@ export const load: PageServerLoad = async ({ params }) => {
   if (product.status === 'not-found') error(404, 'Page introuvable')
   const similarProducts =
     product.status === 'success' ? await loadSimilarProducts(product.product) : []
-  return { product, similarProducts }
+  return {
+    product,
+    similarProducts,
+    alternates: product.status === 'success' ? product.product.alternates : undefined,
+  }
 }

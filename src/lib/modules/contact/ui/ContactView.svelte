@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { PageHeader } from '#lib/shared/ui/layout'
 
@@ -14,20 +15,15 @@
   }
 
   const { form, product }: Props = $props()
+  const t = useDictionary()
 </script>
 
-<PageHeader
-  title="Contact"
-  description="Démo de formulaire : validation par schéma zod avec superforms, erreurs liées aux champs, envoi par action serveur avec amélioration progressive."
-/>
+<PageHeader title={t.contact.title} description={t.contact.description} />
 
-<p class="lead">
-  Formulaire validé par un schéma zod, envoyé par une action serveur. Il fonctionne aussi sans
-  JavaScript.
-</p>
+<p class="lead">{t.contact.intro}</p>
 {#if product}
   <p class="mb-6" data-testid="contact-product">
-    Votre demande concerne :
+    {t.contact.product}
     <a href={resolveHref(`/produit/${product.slug}`)} class="bui-link">{product.name}</a>
   </p>
 {/if}

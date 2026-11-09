@@ -1,10 +1,10 @@
 export { buildBreadcrumb } from './breadcrumb'
 export {
-  absoluteUrl,
   buildBreadcrumbJsonLd,
   buildHomeJsonLd,
   buildPageMeta,
   DEFAULT_SHARE_IMAGE,
+  localizedUrl,
 } from './buildPageMeta'
 export { buildWebManifest } from './manifest'
 export { buildRobotsTxt } from './robots'

@@ -1,10 +1,10 @@
 <script lang="ts">
+  import { format, useDictionary } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { Badge, ResponsiveImage } from '#lib/shared/ui/kit'
 
   import { productHref } from '../domain/catalog'
   import { formatPrice } from '../domain/price'
-  import { EXPOSURE_LABELS, SIZE_LABELS } from './labels'
 
   import type { Catalog } from '../domain/catalog'
 
@@ -23,6 +23,8 @@
     priority = false,
     fetchPriority = priority ? 'high' : 'auto',
   }: Props = $props()
+
+  const t = useDictionary()
 </script>
 
 <article id={product.slug} class="product-card" data-testid="catalog-product">
@@ -50,14 +52,17 @@
       </h2>
       {#if showPrice}
         <p class="font-semibold" data-testid="catalog-product-price">
-          {formatPrice(product.price)}
+          {formatPrice(product.price, t.language.tag)}
         </p>
       {/if}
       <p class="text-body-sm text-text-muted">
-        {EXPOSURE_LABELS[product.exposure]} · Taille {SIZE_LABELS[product.size].toLowerCase()}
+        {format(t.catalog.cardFeatures, {
+          exposure: t.catalog.exposures[product.exposure],
+          size: t.catalog.sizes[product.size].toLowerCase(),
+        })}
       </p>
       {#if !product.inStock}
-        <p class="mt-1"><Badge variant="error">Rupture de stock</Badge></p>
+        <p class="mt-1"><Badge variant="error">{t.catalog.outOfStock}</Badge></p>
       {/if}
     </div>
   </div>

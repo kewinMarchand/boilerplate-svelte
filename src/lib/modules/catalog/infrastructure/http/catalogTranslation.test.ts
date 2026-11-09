@@ -55,19 +55,50 @@ describe('toProductsQuery', () => {
   })
 })
 
+const LANGUAGES = { locale: 'fr', locales: ['fr'] }
+
 describe('toCategory', () => {
   it('ajoute la description éditoriale du site à chaque catégorie', () => {
-    const category = toCategory({
-      slug: 'plantes-aquatiques',
-      name: 'Plantes aquatiques',
-      parent: null,
-      children: [
-        { slug: 'nenuphars', name: 'Nénuphars', parent: 'plantes-aquatiques', children: [] },
-      ],
-    })
+    const category = toCategory(
+      {
+        slug: 'plantes-aquatiques',
+        name: 'Plantes aquatiques',
+        parent: null,
+        children: [
+          {
+            slug: 'nenuphars',
+            name: 'Nénuphars',
+            parent: 'plantes-aquatiques',
+            children: [],
+            alternates: [],
+          },
+        ],
+        alternates: [],
+      },
+      'fr',
+    )
 
     expect(category.description).toMatch(/^Plantes aquatiques pour bassins/)
     expect(category.children[0]?.description).toMatch(/^Nénuphars blancs/)
+  })
+
+  it('prend la description dans la langue de la réponse, par le slug français de la catégorie', () => {
+    const category = toCategory(
+      {
+        slug: 'aquatic-plants',
+        name: 'Aquatic plants',
+        parent: null,
+        children: [],
+        alternates: [
+          { locale: 'fr', slug: 'plantes-aquatiques' },
+          { locale: 'en', slug: 'aquatic-plants' },
+        ],
+      },
+      'en',
+    )
+
+    expect(category.description).toMatch(/^Aquatic plants for ponds/)
+    expect(category.alternates).toHaveLength(2)
   })
 })
 
@@ -108,7 +139,13 @@ describe('toListing', () => {
         ],
       },
       1,
-      { chain: [], slugs: ['plantes-exterieur'] },
+      {
+        chain: [],
+        slugs: ['plantes-exterieur'],
+        categories: [],
+        languages: LANGUAGES,
+        language: 'fr',
+      },
     )
 
     expect(listing.products[0]).toMatchObject({ id: '7', price: 5990 })
@@ -142,10 +179,7 @@ describe('toListing', () => {
       [],
       { totalItems: 0, exposure: [], size: [], category: [], attributes: [] },
       1,
-      {
-        chain: [],
-        slugs: [],
-      },
+      { chain: [], slugs: [], categories: [], languages: LANGUAGES, language: 'fr' },
     )
 
     expect(listing.totalPages).toBe(1)
@@ -156,10 +190,7 @@ describe('toListing', () => {
       [],
       { totalItems: 25, exposure: [], size: [], category: [], attributes: [] },
       3,
-      {
-        chain: [],
-        slugs: [],
-      },
+      { chain: [], slugs: [], categories: [], languages: LANGUAGES, language: 'fr' },
     )
 
     expect(listing).toMatchObject({ total: 25, page: 3, totalPages: 3 })
@@ -184,6 +215,7 @@ describe('toProductDetail', () => {
       gallery: [],
       metaTitle: '',
       metaDescription: '',
+      alternates: [],
     })
 
     expect(detail.description).toEqual([])
@@ -206,6 +238,7 @@ describe('toProductDetail', () => {
       gallery: [],
       metaTitle: '',
       metaDescription: '',
+      alternates: [],
     })
 
     expect(detail.description).toEqual(['Rustique.', 'Résiste au vent,\naux embruns.'])
@@ -245,6 +278,7 @@ describe('toProductDetail', () => {
       gallery: [],
       metaTitle: '',
       metaDescription: '',
+      alternates: [],
     })
 
     expect(detail.attributes).toEqual([
@@ -276,10 +310,18 @@ describe('toProductDetail', () => {
       gallery: [image('feuille'), image('tronc')],
       metaTitle: 'Palmier nain : rustique et compact',
       metaDescription: 'Un palmier qui tient sur un balcon.',
+      alternates: [
+        { locale: 'fr', slug: 'palmier-nain' },
+        { locale: 'en', slug: 'dwarf-palm' },
+      ],
     })
 
     expect(detail.gallery.map(({ alt }) => alt)).toEqual(['feuille', 'tronc'])
     expect(detail.metaTitle).toBe('Palmier nain : rustique et compact')
     expect(detail.metaDescription).toBe('Un palmier qui tient sur un balcon.')
+    expect(detail.alternates).toEqual([
+      { locale: 'fr', path: '/produit/palmier-nain' },
+      { locale: 'en', path: '/produit/dwarf-palm' },
+    ])
   })
 })

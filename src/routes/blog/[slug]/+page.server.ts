@@ -7,5 +7,8 @@ import type { PageServerLoad } from './$types'
 export const load: PageServerLoad = async ({ params }) => {
   const article = await loadArticle(params.slug)
   if (article.status === 'not-found') error(404, 'Page introuvable')
-  return { article }
+  return {
+    article,
+    alternates: article.status === 'success' ? article.article.alternates : undefined,
+  }
 }

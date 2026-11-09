@@ -1,14 +1,19 @@
 import { fail, message, setError, superValidate } from 'sveltekit-superforms'
 import { zod4 } from 'sveltekit-superforms/adapters'
 
-import { contactSchema } from '../domain/contactSchema'
+import { dictionaryFor } from '#lib/shared/i18n/index.server'
+
+import { createContactSchema } from '../domain/contactSchema'
 import { findInquiryProduct } from '../infrastructure/findInquiryProduct'
 import { sendContactMessage } from '../infrastructure/sendContactMessage'
 import { INQUIRY_PARAM } from './inquiry'
 
 import type { Contact } from '../domain/contactSchema'
+import type { LocaleContext } from '#lib/shared/i18n'
 
-const contactAdapter = zod4(contactSchema)
+/** Schéma aux messages de la langue de la page. */
+const contactAdapter = (locale: LocaleContext) =>
+  zod4(createContactSchema(dictionaryFor(locale).contact.validation))
 
 const EMPTY_VALUES: Contact.FormValues = { name: '', email: '', message: '' }
 
@@ -19,23 +24,23 @@ const loadInquiryProduct = async (url: URL): Promise<Contact.Product | null> => 
   return findInquiryProduct(slug).catch(() => null)
 }
 
-export const loadContactPage = async (url: URL) => {
+export const loadContactPage = async (url: URL, locale: LocaleContext) => {
   const product = await loadInquiryProduct(url)
   const form = product
     ? await superValidate<Contact.FormValues, Contact.FormMessage>(
         { product: product.slug },
-        contactAdapter,
+        contactAdapter(locale),
         { errors: false },
       )
-    : await superValidate<Contact.FormValues, Contact.FormMessage>(contactAdapter)
+    : await superValidate<Contact.FormValues, Contact.FormMessage>(contactAdapter(locale))
   return { form, product }
 }
 
 export const contactActions = {
-  default: async ({ request }: { request: Request }) => {
+  default: async ({ request, locals }: { request: Request; locals: App.Locals }) => {
     const form = await superValidate<Contact.FormValues, Contact.FormMessage>(
       request,
-      contactAdapter,
+      contactAdapter(locals.locale),
     )
 
     if (!form.valid) {
@@ -44,7 +49,7 @@ export const contactActions = {
 
     let result
     try {
-      result = await sendContactMessage(form.data)
+      result = await sendContactMessage(form.data, locals.locale.locale)
     } catch {
       return message(form, { status: 'error' }, { status: 500 })
     }

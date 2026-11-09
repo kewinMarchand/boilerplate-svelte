@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { ResponsiveImage } from '#lib/shared/ui/kit'
 
@@ -15,6 +16,7 @@
   }
 
   const { article, featured = false, testId = 'home-blog-card', headingLevel = 3 }: Props = $props()
+  const t = useDictionary()
 </script>
 
 <article class="bui-card relative" data-testid={testId}>
@@ -41,7 +43,7 @@
       <a href={resolveHref(articleHref(article.slug))} class="blog-card-link">{article.title}</a>
     </svelte:element>
     <time datetime={article.publishedAt} class="text-body-sm text-text-muted">
-      {formatPublishedAt(article.publishedAt)}
+      {formatPublishedAt(article.publishedAt, t.language.tag)}
     </time>
     <p>{article.excerpt}</p>
   </div>

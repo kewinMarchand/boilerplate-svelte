@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { format, useDictionary } from '#lib/shared/i18n'
   import { largestWebp, ResponsiveImage } from '#lib/shared/ui/kit'
 
   import { useProductGallery } from './hooks/useProductGallery.svelte'
@@ -14,9 +15,11 @@
   const { images, sizes }: Props = $props()
 
   const THUMB_SIZES = '80px'
+  const t = useDictionary()
   const gallery = useProductGallery(() => images.length)
   const displayed = $derived(images[gallery.current] ?? images[0])
-  const thumbLabel = (index: number) => `Voir l'image ${index + 1} sur ${images.length}`
+  const thumbLabel = (index: number) =>
+    format(t.product.galleryImage, { position: index + 1, total: images.length })
 </script>
 
 <div data-testid="product-gallery">

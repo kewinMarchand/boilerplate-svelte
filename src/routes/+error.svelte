@@ -4,4 +4,4 @@
   import { ErrorView } from '#lib/views/errors'
 </script>
 
-<ErrorView status={page.status} pathname={page.url.pathname} />
+<ErrorView status={page.status} />

@@ -22,7 +22,9 @@ describe('FeaturedProducts', () => {
   it("affiche le message d'erreur à la place du carrousel", () => {
     render(FeaturedProducts, { featured: { status: 'error', message: 'Oups' }, showPrice: true })
 
-    expect(screen.getByTestId('home-carousel-error')).toHaveTextContent('Oups')
+    expect(screen.getByTestId('home-carousel-error')).toHaveTextContent(
+      'Impossible de charger le carrousel pour le moment.',
+    )
     expect(screen.queryByTestId('home-carousel')).not.toBeInTheDocument()
   })
 

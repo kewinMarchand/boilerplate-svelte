@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { format, useDictionary } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { Button } from '#lib/shared/ui/kit'
 
@@ -18,6 +19,7 @@
   const { item, isAvailable }: Props = $props()
 
   const cart = useCart()
+  const t = useDictionary()
   let isAdded = $state(false)
 
   const add = () => {
@@ -31,12 +33,12 @@
 {#if cart.hydrated}
   <div class="mb-6">
     <Button disabled={!isAvailable} onclick={add} data-testid="add-to-cart">
-      Ajouter au panier
+      {t.cart.add}
     </Button>
     <p role="status" class="mt-2" data-testid="add-to-cart-status">
       {#if isAdded}
-        {item.name} ajouté au panier.
-        <a href={resolveHref(CART_PATH)} class="bui-link">Voir le panier</a>
+        {format(t.cart.added, { name: item.name })}
+        <a href={resolveHref(CART_PATH)} class="bui-link">{t.cart.view}</a>
       {/if}
     </p>
   </div>

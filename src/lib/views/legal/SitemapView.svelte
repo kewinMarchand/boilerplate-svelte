@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { ALL_NAVIGATION, CATALOG_NAVIGATION } from '#lib/shared/config'
+  import { ALL_NAVIGATION, CATALOG_NAVIGATION, navigationLabel } from '#lib/shared/config'
+  import { useDictionary } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { PageHeader } from '#lib/shared/ui/layout'
 
@@ -12,18 +13,16 @@
   }
 
   const { categories }: Props = $props()
+  const t = useDictionary()
 </script>
 
-<PageHeader
-  title="Plan du site"
-  description="Plan du site : toutes les pages accessibles, dont chaque catégorie du catalogue de plantes tropicales."
-/>
+<PageHeader title={t.legal.sitemapTitle} description={t.legal.sitemapDescription} />
 
 <div class="prose-legal">
   <ul data-testid="legal-sitemap">
     {#each ALL_NAVIGATION as item (item.href)}
       <li>
-        <a href={resolveHref(item.href)}>{item.label}</a>
+        <a href={resolveHref(item.href)}>{navigationLabel(item, t)}</a>
         {#if item.href === CATALOG_NAVIGATION.href}
           <SitemapTree nodes={categories} />
         {/if}

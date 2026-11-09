@@ -1,6 +1,7 @@
 <script lang="ts">
   import { tick } from 'svelte'
 
+  import { format, useDictionary } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { Button } from '#lib/shared/ui/kit'
   import { PageHeader } from '#lib/shared/ui/layout'
@@ -15,6 +16,8 @@
   const productHref = (slug: string): AppPath => `/produit/${slug}`
 
   const cart = useCart()
+  const t = useDictionary()
+  const price = (cents: number) => formatPrice(cents, t.language.tag)
 
   let list: HTMLUListElement | null = null
   let empty: HTMLParagraphElement | null = null
@@ -34,19 +37,15 @@
   }
 </script>
 
-<PageHeader
-  title="Panier"
-  description="Votre panier : les produits choisis, leurs quantités et le total, gardés dans ce navigateur."
-  seo={{ noindex: true }}
-/>
-<noscript><p>Le panier demande JavaScript.</p></noscript>
+<PageHeader title={t.cart.title} description={t.cart.description} seo={{ noindex: true }} />
+<noscript><p>{t.cart.noScript}</p></noscript>
 
 <!-- Le panier n'existe que dans le navigateur : il est lu après l'hydratation. -->
 {#if cart.hydrated}
   {#if cart.lines.length === 0}
     <p bind:this={empty} tabindex="-1" data-testid="cart-empty">
-      Votre panier est vide.
-      <a href={resolveHref(CATALOG_PATH)} class="bui-link">Parcourir le catalogue</a>
+      {t.cart.empty}
+      <a href={resolveHref(CATALOG_PATH)} class="bui-link">{t.cart.browseCatalog}</a>
     </p>
   {:else}
     <ul bind:this={list} class="grid gap-4">
@@ -55,9 +54,9 @@
           <a href={resolveHref(productHref(line.slug))} class="bui-link font-semibold">
             {line.name}
           </a>
-          <span>{formatPrice(line.price)} l’unité</span>
+          <span>{format(t.cart.unitPrice, { price: price(line.price) })}</span>
           <label class="bui-field">
-            <span class="bui-field__label">Quantité de {line.name}</span>
+            <span class="bui-field__label">{format(t.cart.quantityOf, { name: line.name })}</span>
             <input
               type="number"
               min="1"
@@ -68,22 +67,22 @@
               data-testid="cart-quantity"
             />
           </label>
-          <span class="font-semibold">{formatPrice(line.price * line.quantity)}</span>
+          <span class="font-semibold">{price(line.price * line.quantity)}</span>
           <Button
             variant="outline"
-            aria-label={`Retirer ${line.name}`}
+            aria-label={format(t.cart.removeItem, { name: line.name })}
             onclick={() => remove(line.slug, index)}
             data-testid="cart-remove"
           >
-            Retirer
+            {t.cart.remove}
           </Button>
         </li>
       {/each}
     </ul>
     <p class="mt-6 mb-2 text-title font-semibold">
-      Total : <span data-testid="cart-total">{formatPrice(totalPrice(cart.lines))}</span>
+      {t.cart.total} <span data-testid="cart-total">{price(totalPrice(cart.lines))}</span>
     </p>
-    <p>La commande en ligne arrive bientôt.</p>
+    <p>{t.cart.soon}</p>
   {/if}
 {/if}
 

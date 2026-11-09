@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { plural, useDictionary } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { Button, Icon } from '#lib/shared/ui/kit'
 
@@ -8,16 +9,17 @@
 
   const cart = useCart()
   const count = $derived(countItems(cart.lines))
+  const t = useDictionary()
 </script>
 
 <!-- Nom accessible « Panier, 3 articles » : texte visible et compléments masqués, sans aria-label (axe exige le texte affiché dans le nom). -->
 <Button href={resolveHref(CART_PATH)} variant="nav" class="shrink-0" data-testid="cart-link">
   <Icon name="shopping-cart" />
-  <span class="max-sm:sr-only">Panier</span>
+  <span class="max-sm:sr-only">{t.cart.title}</span>
   {#if count > 0}
     <span class="bui-visually-hidden">, </span>
     <span class="cart-count" data-testid="cart-count">{count}</span>
-    <span class="bui-visually-hidden"> article{count > 1 ? 's' : ''}</span>
+    <span class="bui-visually-hidden">{plural(t.cart.itemCount, count, t.language.tag)}</span>
   {/if}
 </Button>
 

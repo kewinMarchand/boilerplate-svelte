@@ -1,20 +1,20 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { useOppositionMesure } from '#lib/shared/observability'
   import { Checkbox } from '#lib/shared/ui/kit'
 
   const opposition = useOppositionMesure()
   const id = $props.id()
+  const t = useDictionary()
 </script>
 
 <Checkbox
   {id}
-  label="Ne pas mesurer mes visites sur ce site"
+  label={t.legal.opposition}
   checked={opposition.refusee}
   data-testid="legal-opposition-mesure"
   onchange={(event) => opposition.changer(event.currentTarget.checked)}
 />
 <p role="status" aria-live="polite" data-testid="legal-opposition-etat">
-  {opposition.refusee
-    ? 'Vos visites ne sont plus mesurées depuis ce navigateur.'
-    : 'Vos visites sont mesurées, de façon anonyme.'}
+  {opposition.refusee ? t.legal.oppositionRefused : t.legal.oppositionMeasured}
 </p>

@@ -1,11 +1,18 @@
 import { render, screen, within } from '@testing-library/svelte'
 
+import { fr } from '#lib/shared/i18n/dictionaries/fr'
+
 import LegalPageContent from './LegalPageContent.svelte'
 
 vi.mock('$app/state', () => ({
   page: {
     url: new URL('http://localhost/donnees-personnelles'),
-    data: { siteIdentity: { name: 'Boilerplate', shareImage: null }, pageMetas: {} },
+    data: {
+      siteIdentity: { name: 'Boilerplate', shareImage: null },
+      pageMetas: {},
+      dictionary: fr,
+      locale: { locale: 'fr', defaultLocale: 'fr', locales: ['fr'] },
+    },
   },
 }))
 
@@ -29,7 +36,9 @@ describe('LegalPageContent', () => {
     })
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Mentions légales')
-    expect(screen.getByTestId('legal-error')).toHaveTextContent('Oups')
+    expect(screen.getByTestId('legal-error')).toHaveTextContent(
+      'Impossible de charger cette page pour le moment.',
+    )
     expect(screen.queryByTestId('legal-section')).not.toBeInTheDocument()
   })
 

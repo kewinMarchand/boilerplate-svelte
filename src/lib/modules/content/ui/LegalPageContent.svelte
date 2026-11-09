@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { Alert } from '#lib/shared/ui/kit'
   import { PageHeader } from '#lib/shared/ui/layout'
 
@@ -14,11 +15,12 @@
   }
 
   const { legalPage, fallbackTitle, description }: Props = $props()
+  const t = useDictionary()
 </script>
 
 {#if legalPage.status === 'error'}
   <PageHeader title={fallbackTitle} {description} />
-  <Alert variant="error" data-testid="legal-error">{legalPage.message}</Alert>
+  <Alert variant="error" data-testid="legal-error">{t.legal.loadError}</Alert>
 {:else}
   <PageHeader title={legalPage.page.title} {description} />
   <div class="prose-legal">

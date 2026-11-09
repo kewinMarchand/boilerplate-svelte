@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state'
 
-  import { toAppPath } from '#lib/shared/routing'
+  import { useDictionary, useLocale, usePageAlternates, usePagePath } from '#lib/shared/i18n'
   import { buildBreadcrumb, buildPageMeta, SeoHead } from '#lib/shared/seo'
 
   import Breadcrumb from './Breadcrumb.svelte'
@@ -18,8 +18,10 @@
 
   const { title, description, parents = [], seo = {}, titleTestId }: Props = $props()
 
-  const path = $derived(toAppPath(page.url.pathname))
-  const breadcrumb = $derived(buildBreadcrumb({ label: title, path }, parents))
+  const t = useDictionary()
+  const locale = useLocale()
+  const path = $derived(usePagePath())
+  const breadcrumb = $derived(buildBreadcrumb({ label: title, path }, parents, t.nav.home))
   const override = $derived(page.data.pageMetas[path])
   const meta = $derived(
     buildPageMeta(
@@ -33,6 +35,7 @@
         breadcrumb,
       },
       page.data.siteIdentity,
+      { locale, alternates: usePageAlternates() },
     ),
   )
 </script>

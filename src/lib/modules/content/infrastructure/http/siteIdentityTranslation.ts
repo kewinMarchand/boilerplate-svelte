@@ -25,4 +25,6 @@ export const toSiteIdentity = (dto: SiteIdentityDto): SiteIdentity => ({
       ? { light: dto.theme.light, dark: dto.theme.dark }
       : null,
   salesEnabled: dto.salesEnabled,
+  // Absente d'une API antérieure aux langues (section 29) : site monolingue en français
+  locales: dto.locales ?? ['fr'],
 })

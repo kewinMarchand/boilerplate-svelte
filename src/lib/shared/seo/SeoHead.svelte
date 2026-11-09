@@ -18,6 +18,9 @@
   <meta name="application-name" content={meta.siteName} />
   <meta name="robots" content={meta.robots} />
   <link rel="canonical" href={meta.canonical} />
+  {#each meta.hreflang as link (link.hreflang)}
+    <link rel="alternate" hreflang={link.hreflang} href={link.href} />
+  {/each}
   {#if meta.prev}
     <link rel="prev" href={meta.prev} />
   {/if}
@@ -37,6 +40,9 @@
   <meta property="og:image:height" content={String(meta.image.height)} />
   <meta property="og:image:alt" content={meta.image.alt} />
   <meta property="og:locale" content={meta.locale} />
+  {#each meta.alternateLocales as alternate (alternate)}
+    <meta property="og:locale:alternate" content={alternate} />
+  {/each}
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={meta.ogTitle} />
   <meta name="twitter:description" content={meta.description} />

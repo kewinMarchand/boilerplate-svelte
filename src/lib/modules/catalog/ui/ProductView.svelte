@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { CATALOG_NAVIGATION } from '#lib/shared/config'
+  import { CATALOG_NAVIGATION, navigationLabel } from '#lib/shared/config'
+  import { format, useDictionary, useLocale } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
-  import { absoluteUrl } from '#lib/shared/seo'
+  import { localizedUrl } from '#lib/shared/seo'
   import { Alert, Badge, largestWebp, ResponsiveImage } from '#lib/shared/ui/kit'
   import { PageHeader } from '#lib/shared/ui/layout'
 
   import { productHref } from '../domain/catalog'
   import { CATALOG_ROOT_PATH } from '../domain/categoryPath'
   import { formatPrice } from '../domain/price'
-  import { EXPOSURE_LABELS } from './labels'
   import ProductGallery from './ProductGallery.svelte'
   import SimilarProducts from './SimilarProducts.svelte'
 
@@ -28,7 +28,12 @@
   const { product, similarProducts, salesEnabled, purchase }: Props = $props()
 
   const IMAGE_SIZES = '(min-width: 1440px) 680px, (min-width: 768px) 50vw, calc(100vw - 32px)'
-  const CATALOG: Seo.BreadcrumbItem = { label: CATALOG_NAVIGATION.label, path: CATALOG_ROOT_PATH }
+  const t = useDictionary()
+  const locale = useLocale()
+  const CATALOG: Seo.BreadcrumbItem = {
+    label: navigationLabel(CATALOG_NAVIGATION, t),
+    path: CATALOG_ROOT_PATH,
+  }
 
   const detail = $derived(product.status === 'success' ? product.product : undefined)
   const category = $derived(detail?.categoryPath.at(-1))
@@ -38,8 +43,19 @@
   ])
   const description = $derived(
     detail
-      ? `${detail.name} : exposition ${EXPOSURE_LABELS[detail.exposure].toLowerCase()}, taille ${detail.size}${salesEnabled ? `, ${formatPrice(detail.price)}` : ''}. ${detail.inStock ? 'En stock' : 'En rupture de stock'}, rayon ${category?.name ?? 'catalogue'}.`
-      : 'Fiche produit de notre jardinerie tropicale.',
+      ? format(t.product.description, {
+          name: detail.name,
+          exposure: t.catalog.exposures[detail.exposure].toLowerCase(),
+          size: detail.size,
+          price: salesEnabled
+            ? format(t.product.descriptionPrice, {
+                price: formatPrice(detail.price, t.language.tag),
+              })
+            : '',
+          stock: detail.inStock ? t.product.descriptionInStock : t.product.descriptionOutOfStock,
+          category: category?.name ?? t.product.noCategory,
+        })
+      : t.product.fallbackDescription,
   )
   const galleryImages = $derived(
     detail?.gallery.length ? [...(detail.image ? [detail.image] : []), ...detail.gallery] : [],
@@ -66,13 +82,13 @@
                 description: detail.description.join(' '),
               }),
               sku: detail.slug,
-              url: absoluteUrl(productHref(detail.slug)),
+              url: localizedUrl(productHref(detail.slug), locale),
               ...(category && { category: category.name }),
               ...(detail.image && { image: largestWebp(detail.image) }),
               ...(salesEnabled && {
                 offers: {
                   '@type': 'Offer',
-                  url: absoluteUrl(productHref(detail.slug)),
+                  url: localizedUrl(productHref(detail.slug), locale),
                   priceCurrency: 'EUR',
                   price: (detail.price / 100).toFixed(2),
                   availability: `https://schema.org/${detail.inStock ? 'InStock' : 'OutOfStock'}`,
@@ -86,8 +102,8 @@
 </script>
 
 {#if product.status === 'error'}
-  <PageHeader title="Produit" {description} parents={[CATALOG]} {seo} />
-  <Alert variant="error" data-testid="product-error">{product.message}</Alert>
+  <PageHeader title={t.product.fallbackTitle} {description} parents={[CATALOG]} {seo} />
+  <Alert variant="error" data-testid="product-error">{t.product.loadError}</Alert>
 {:else if detail}
   <article data-testid="product-page">
     <PageHeader title={detail.name} {description} {parents} {seo} titleTestId="product-title" />
@@ -107,7 +123,7 @@
       <div>
         {#if salesEnabled}
           <p class="text-lead font-semibold" data-testid="product-price">
-            {formatPrice(detail.price)}
+            {formatPrice(detail.price, t.language.tag)}
           </p>
         {/if}
         {#if detail.description.length > 0}
@@ -118,13 +134,15 @@
           </div>
         {/if}
         <dl class="product-features">
-          <dt>Exposition</dt>
-          <dd>{EXPOSURE_LABELS[detail.exposure]}</dd>
-          <dt>Taille</dt>
+          <dt>{t.product.exposure}</dt>
+          <dd>{t.catalog.exposures[detail.exposure]}</dd>
+          <dt>{t.product.size}</dt>
           <dd>{detail.size}</dd>
-          <dt>Disponibilité</dt>
+          <dt>{t.product.availability}</dt>
           <dd>
-            {#if detail.inStock}En stock{:else}<Badge variant="error">Rupture de stock</Badge>{/if}
+            {#if detail.inStock}{t.product.inStock}{:else}<Badge variant="error"
+                >{t.product.outOfStock}</Badge
+              >{/if}
           </dd>
         </dl>
         {#if detail.attributes.length > 0}
@@ -141,7 +159,7 @@
         {#if category}
           <p>
             <a href={resolveHref(category.path)} class="bui-link">
-              Voir les autres produits : {category.name}
+              {format(t.product.otherProducts, { category: category.name })}
             </a>
           </p>
         {/if}

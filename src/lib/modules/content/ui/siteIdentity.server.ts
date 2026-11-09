@@ -5,9 +5,9 @@ import { findSiteIdentity } from '../infrastructure/siteIdentityRepository'
 import type { SiteIdentity } from '../domain/siteIdentity'
 
 /** API en erreur ou injoignable : la configuration du site sert de repli, la page reste servie. */
-export const loadSiteIdentity = async (): Promise<SiteIdentity> => {
+export const loadSiteIdentity = async (locale?: string): Promise<SiteIdentity> => {
   try {
-    return await findSiteIdentity()
+    return await findSiteIdentity(locale)
   } catch {
     return FALLBACK_IDENTITY
   }

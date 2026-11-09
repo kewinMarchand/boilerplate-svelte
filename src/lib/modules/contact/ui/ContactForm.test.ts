@@ -2,10 +2,14 @@ import { render, screen } from '@testing-library/svelte'
 import { superValidate } from 'sveltekit-superforms'
 import { zod4 } from 'sveltekit-superforms/adapters'
 
-import { contactSchema } from '../domain/contactSchema'
+import { fr } from '#lib/shared/i18n/dictionaries/fr'
+
+import { createContactSchema } from '../domain/contactSchema'
 import ContactForm from './ContactForm.svelte'
 
 import type { Contact } from '../domain/contactSchema'
+
+const contactSchema = createContactSchema(fr.contact.validation)
 
 describe('ContactForm', () => {
   it('lie le message d’erreur au champ invalide', async () => {

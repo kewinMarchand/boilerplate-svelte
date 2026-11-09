@@ -1,12 +1,16 @@
 import { ApiError } from '#lib/shared/api/client'
-import { serverApiClient } from '#lib/shared/api/client.server'
+import { requestApiClient } from '#lib/shared/api/client.server'
 
 import { toSiteIdentity } from './http/siteIdentityTranslation'
 
 import type { SiteIdentity } from '../domain/siteIdentity'
 
-export const findSiteIdentity = async (): Promise<SiteIdentity> => {
-  const { data, response } = await serverApiClient().GET('/api/site-identity')
+/**
+ * Lue avant de connaître les langues du site : `locale` est la langue demandée par l'adresse (`/en/...`),
+ * que l'API ignore si elle ne l'a pas activée ; aucune sans préfixe (langue par défaut).
+ */
+export const findSiteIdentity = async (locale: string | undefined): Promise<SiteIdentity> => {
+  const { data, response } = await requestApiClient(locale).GET('/api/site-identity')
   if (!data) throw new ApiError(response)
   return toSiteIdentity(data)
 }

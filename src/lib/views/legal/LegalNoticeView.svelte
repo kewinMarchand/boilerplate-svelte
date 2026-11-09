@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
+
   import { LegalPageContent } from '#lib/modules/content'
 
   import type { LegalPage } from '#lib/modules/content'
@@ -8,10 +10,11 @@
   }
 
   const { legalPage }: Props = $props()
+  const t = useDictionary()
 </script>
 
 <LegalPageContent
   {legalPage}
-  fallbackTitle="Mentions légales"
-  description="Mentions légales du site : éditeur, directeur de la publication, hébergeur et propriété intellectuelle."
+  fallbackTitle={t.legal.legalNoticeTitle}
+  description={t.legal.legalNoticeDescription}
 />

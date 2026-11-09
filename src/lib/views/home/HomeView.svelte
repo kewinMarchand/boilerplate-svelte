@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useDictionary, useLocale, usePageAlternates } from '#lib/shared/i18n'
   import { buildHomeJsonLd, buildPageMeta, SeoHead } from '#lib/shared/seo'
 
   import { BlogSection } from '#lib/modules/blog'
@@ -19,6 +20,9 @@
   }
 
   const { blog, featured, identity, pageMeta }: Props = $props()
+
+  const t = useDictionary()
+  const locale = useLocale()
 </script>
 
 <SeoHead
@@ -28,9 +32,10 @@
       metaTitle: pageMeta?.title,
       metaDescription: pageMeta?.description,
       path: '/',
-      jsonLd: buildHomeJsonLd(identity),
+      jsonLd: buildHomeJsonLd(identity, locale, t.language.tag),
     },
     identity,
+    { locale, alternates: usePageAlternates() },
   )}
 />
 

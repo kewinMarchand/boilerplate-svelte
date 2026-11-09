@@ -3,10 +3,10 @@ import type { SiteIdentity } from '#lib/shared/config'
 /** Couleur principale de boilerplates-ui, quand aucune couleur de marque n'est saisie. */
 const DEFAULT_THEME_COLOR = '#1d4ed8'
 
-export const buildWebManifest = ({ name, theme, icon }: SiteIdentity) => ({
+export const buildWebManifest = ({ name, theme, icon }: SiteIdentity, locale: string) => ({
   name,
   short_name: name,
-  lang: 'fr',
+  lang: locale,
   start_url: '/',
   display: 'standalone',
   theme_color: theme?.light.primary ?? DEFAULT_THEME_COLOR,

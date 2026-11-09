@@ -1,5 +1,6 @@
 import { MAINTENANCE } from '$app/env/private'
 
+import { localeContext, localePrefix } from '#lib/shared/i18n'
 import {
   initServerErrorReporting,
   reportServerError,
@@ -37,15 +38,18 @@ export const handle: Handle = async ({ event, resolve }) => {
     })
   }
 
-  // Identité lue une fois par requête : `<html>` et `<head>` en dépendent, le layout la reçoit par `locals`
-  const identity = await loadSiteIdentity()
+  // Identité lue une fois par requête, dans la langue demandée par l'adresse : `<html>` et `<head>` en
+  // dépendent, le layout la reçoit par `locals`, avec la langue de la page tirée de ses `locales`
+  const identity = await loadSiteIdentity(localePrefix(event.url.pathname))
   event.locals.siteIdentity = identity
+  event.locals.locale = localeContext(event.url.pathname, identity.locales)
   const themeCss = identity.theme ? buildThemeCss(identity.theme) : ''
 
   const response = await resolve(event, {
     preload: ({ type }) => type === 'css',
     transformPageChunk: ({ html }) =>
       html
+        .replace('%lang%', event.locals.locale.locale)
         .replace('%color.scheme%', identity.defaultColorScheme)
         .replace('%site.icons%', buildIconLinks(identity.icon))
         .replace(

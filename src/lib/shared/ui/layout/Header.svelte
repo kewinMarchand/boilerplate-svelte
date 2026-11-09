@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { resolve } from '$app/paths'
-  import { page } from '$app/state'
-
   import { CATALOG_NAVIGATION, MAIN_NAVIGATION } from '#lib/shared/config'
+  import { useDictionary, usePagePath } from '#lib/shared/i18n'
+  import { resolveHref } from '#lib/shared/routing'
   import { A11yModeToggle } from '#lib/shared/ui/a11y-mode'
   import { ColorSchemeToggle } from '#lib/shared/ui/color-scheme'
   import { ResponsiveImage } from '#lib/shared/ui/kit'
 
   import CategoryMenu from './CategoryMenu.svelte'
+  import LanguageSwitcher from './LanguageSwitcher.svelte'
   import MobileMenu from './MobileMenu.svelte'
   import NavLink from './NavLink.svelte'
 
@@ -24,14 +24,16 @@
 
   const [home, ...otherLinks] = MAIN_NAVIGATION
   const LOGO_HEIGHT = 40
+  const t = useDictionary()
 </script>
 
 <header class="bg-primary text-on-primary">
+  <LanguageSwitcher />
   <div class="container-page header-bar">
     <a
-      href={resolve('/')}
+      href={resolveHref('/')}
       class="logo-link min-w-0 grow"
-      aria-current={page.url.pathname === '/' ? 'page' : undefined}
+      aria-current={usePagePath() === '/' ? 'page' : undefined}
       data-testid="layout-logo"
     >
       {#if identity.logo}
@@ -46,7 +48,7 @@
         {identity.name}
       {/if}
     </a>
-    <nav aria-label="Navigation principale" class="js:max-lg:hidden">
+    <nav aria-label={t.layout.mainNavigation} class="js:max-lg:hidden">
       <ul class="flex flex-wrap gap-1">
         {#if home}
           <li><NavLink {...home} /></li>

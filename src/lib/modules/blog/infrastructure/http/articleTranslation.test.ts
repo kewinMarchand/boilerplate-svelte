@@ -28,6 +28,7 @@ describe('traduction des articles', () => {
       speaker: 'Présenté par Hina Teriierooiterai',
       metaTitle: 'Carrousel accessible : le guide',
       metaDescription: 'Un carrousel sans dépendance.',
+      alternates: [],
     })
 
     expect(detail).toMatchObject({
@@ -40,10 +41,34 @@ describe('traduction des articles', () => {
   })
 
   it('laisse format et audio à null quand l’article n’en a pas', () => {
-    const detail = toArticleDetail({ ...ARTICLE, html: '', metaTitle: '', metaDescription: '' })
+    const detail = toArticleDetail({
+      ...ARTICLE,
+      html: '',
+      metaTitle: '',
+      metaDescription: '',
+      alternates: [],
+    })
 
     expect(detail.format).toBeNull()
     expect(detail.audio).toBeNull()
+  })
+
+  it('donne la fiche dans chaque langue où l’article existe', () => {
+    const detail = toArticleDetail({
+      ...ARTICLE,
+      html: '',
+      metaTitle: '',
+      metaDescription: '',
+      alternates: [
+        { locale: 'fr', slug: 'un-carrousel-accessible' },
+        { locale: 'en', slug: 'an-accessible-carousel' },
+      ],
+    })
+
+    expect(detail.alternates).toEqual([
+      { locale: 'fr', path: '/blog/un-carrousel-accessible' },
+      { locale: 'en', path: '/blog/an-accessible-carousel' },
+    ])
   })
 
   it('liste les rubriques dans l’ordre de l’API', () => {

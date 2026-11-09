@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { Chip } from '#lib/shared/ui/kit'
 
   import { listActiveFilters } from './activeFilters'
@@ -17,7 +18,8 @@
 
   const { path, query, attributeFacets, clearAction }: Props = $props()
 
-  const filters = $derived(listActiveFilters(query, attributeFacets))
+  const t = useDictionary()
+  const filters = $derived(listActiveFilters(query, attributeFacets, t))
 </script>
 
 {#if filters.length > 0}

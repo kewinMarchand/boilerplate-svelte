@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { isAudienceMeasurementEnabled } from '#lib/shared/observability'
 
   import { LegalPageContent } from '#lib/modules/content'
@@ -12,12 +13,13 @@
   }
 
   const { legalPage }: Props = $props()
+  const t = useDictionary()
 </script>
 
 <LegalPageContent
   {legalPage}
-  fallbackTitle="Données personnelles"
-  description="Traitement des données personnelles collectées par le formulaire de contact : finalité, base légale, durée de conservation et droits."
+  fallbackTitle={t.legal.privacyTitle}
+  description={t.legal.privacyDescription}
 />
 
 {#if isAudienceMeasurementEnabled}
@@ -26,17 +28,9 @@
     class="prose-legal mt-4"
     data-testid="legal-audience-measurement"
   >
-    <h2 id="mesure-audience">Mesure d’audience</h2>
-    <p>
-      La fréquentation du site est mesurée avec Matomo, hébergé par l’éditeur, configuré sans cookie
-      et sans identifiant : aucun suivi d’un site à l’autre, aucune donnée transmise à un tiers. Les
-      statistiques produites sont anonymes et servent uniquement à améliorer le site. Les données
-      brutes sont conservées 25 mois au plus.
-    </p>
-    <p>
-      Vous pouvez vous opposer à cette mesure : votre choix est gardé dans ce navigateur, sans
-      cookie.
-    </p>
+    <h2 id="mesure-audience">{t.legal.audienceTitle}</h2>
+    <p>{t.legal.audienceText}</p>
+    <p>{t.legal.oppositionText}</p>
     <OppositionMesure />
   </section>
 {/if}

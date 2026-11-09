@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { ImageCarousel } from '#lib/shared/ui/carousel'
 
   import { productHref } from '../domain/catalog'
@@ -13,12 +14,13 @@
 
   const { products, showPrice }: Props = $props()
 
+  const t = useDictionary()
   const titleId = $props.id()
   const slides = $derived(
     products.map((product) => ({
       id: product.id,
       title: product.name,
-      ...(showPrice && { text: formatPrice(product.price) }),
+      ...(showPrice && { text: formatPrice(product.price, t.language.tag) }),
       image: product.image,
       href: productHref(product.slug),
     })),
@@ -26,6 +28,6 @@
 </script>
 
 <section aria-labelledby={titleId} class="mt-12" data-testid="product-similar">
-  <h2 id={titleId} class="section-title">Produits similaires</h2>
-  <ImageCarousel {slides} label="Produits similaires" />
+  <h2 id={titleId} class="section-title">{t.product.similar}</h2>
+  <ImageCarousel {slides} label={t.product.similar} />
 </section>

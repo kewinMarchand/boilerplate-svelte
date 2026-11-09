@@ -1,23 +1,20 @@
 <script lang="ts">
-  import { resolve } from '$app/paths'
-
-  import { resolveHref, toAppPath } from '#lib/shared/routing'
+  import { useDictionary, usePagePath } from '#lib/shared/i18n'
+  import { resolveHref } from '#lib/shared/routing'
   import { Button } from '#lib/shared/ui/kit'
   import { PageHeader } from '#lib/shared/ui/layout'
 
   interface Props {
     status: number
-    pathname: string
   }
 
-  const { status, pathname }: Props = $props()
+  const { status }: Props = $props()
 
+  const t = useDictionary()
   const isNotFound = $derived(status === 404)
-  const title = $derived(isNotFound ? 'Page introuvable' : 'Une erreur est survenue')
+  const title = $derived(isNotFound ? t.errors.notFoundTitle : t.errors.serverTitle)
   const description = $derived(
-    isNotFound
-      ? "La page demandée n'existe pas ou a été déplacée. Utilisez le plan du site ou le catalogue pour retrouver votre chemin."
-      : 'Une erreur inattendue nous empêche d’afficher cette page. Réessayez dans quelques instants ou revenez à l’accueil.',
+    isNotFound ? t.errors.notFoundDescription : t.errors.serverDescription,
   )
 </script>
 
@@ -26,27 +23,23 @@
 <p class="lead">{description}</p>
 <div class="flex flex-wrap gap-4">
   {#if !isNotFound}
-    <Button href={resolveHref(toAppPath(pathname))} data-sveltekit-reload data-testid="error-retry">
-      Réessayer
+    <Button href={resolveHref(usePagePath())} data-sveltekit-reload data-testid="error-retry">
+      {t.errors.retry}
     </Button>
   {/if}
   <Button
-    href={resolve('/')}
+    href={resolveHref('/')}
     variant={isNotFound ? 'primary' : 'outline'}
     data-testid="error-home-link"
   >
-    Retour à l'accueil
+    {t.errors.home}
   </Button>
   {#if isNotFound}
-    <Button href={resolve('/plan-du-site')} variant="outline" data-testid="error-sitemap-link">
-      Plan du site
+    <Button href={resolveHref('/plan-du-site')} variant="outline" data-testid="error-sitemap-link">
+      {t.errors.sitemap}
     </Button>
-    <Button
-      href={resolve('/catalogue/[...slugs]', { slugs: '' })}
-      variant="outline"
-      data-testid="error-catalog-link"
-    >
-      Catalogue
+    <Button href={resolveHref('/catalogue')} variant="outline" data-testid="error-catalog-link">
+      {t.errors.catalog}
     </Button>
   {/if}
 </div>

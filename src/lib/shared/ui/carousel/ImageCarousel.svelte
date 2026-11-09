@@ -1,6 +1,7 @@
 <script lang="ts">
   import emblaCarouselSvelte from 'embla-carousel-svelte'
 
+  import { format, useDictionary } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { Button, Icon, ResponsiveImage } from '#lib/shared/ui/kit'
 
@@ -17,9 +18,10 @@
 
   const viewportId = $props.id()
   const carousel = useCarousel()
+  const t = useDictionary()
 </script>
 
-<div role="region" aria-roledescription="carrousel" aria-label={label}>
+<div role="region" aria-roledescription={t.carousel.roleDescription} aria-label={label}>
   <!-- Piste focusable : sans JavaScript, elle ne se défile pas au clavier autrement (axe scrollable-region-focusable). -->
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div
@@ -35,8 +37,8 @@
         <div
           class="carousel-slide"
           role="group"
-          aria-roledescription="diapositive"
-          aria-label={`${position + 1} sur ${slides.length}`}
+          aria-roledescription={t.carousel.slideRoleDescription}
+          aria-label={format(t.carousel.position, { position: position + 1, total: slides.length })}
           data-testid="carousel-slide"
         >
           {#if slide.image}
@@ -78,7 +80,7 @@
       icon="chevron-left"
       data-testid="carousel-prev"
     >
-      Précédent
+      {t.carousel.previous}
     </Button>
     <Button
       type="button"
@@ -88,7 +90,7 @@
       onclick={carousel.next}
       data-testid="carousel-next"
     >
-      Suivant
+      {t.carousel.next}
       <Icon name="chevron-right" />
     </Button>
     {#if carousel.snapCount > 1}
@@ -97,7 +99,7 @@
           <button
             type="button"
             class="carousel-dot"
-            aria-label={`Aller à la diapositive ${index + 1}`}
+            aria-label={format(t.carousel.goTo, { position: index + 1 })}
             aria-controls={viewportId}
             aria-current={index === carousel.selected ? 'true' : undefined}
             onclick={() => carousel.goTo(index)}

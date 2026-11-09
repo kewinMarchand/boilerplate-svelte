@@ -1,15 +1,13 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { PageHeader } from '#lib/shared/ui/layout'
 
   import TasksPanel from './TasksPanel.svelte'
+
+  const t = useDictionary()
 </script>
 
-<PageHeader
-  title="Tâches"
-  description="Démo TanStack Query : liste de tâches chargée côté client avec gestion du chargement, des erreurs et de la liste vide."
-/>
+<PageHeader title={t.tasks.title} description={t.tasks.description} />
 
-<p class="lead">
-  Données chargées côté client avec TanStack Query : chargement, erreur et liste vide sont gérés.
-</p>
+<p class="lead">{t.tasks.intro}</p>
 <TasksPanel />

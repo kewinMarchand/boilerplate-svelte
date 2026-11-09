@@ -1,7 +1,11 @@
 <script lang="ts">
-  import { page } from '$app/state'
-
-  import { CATALOG_NAVIGATION, isActivePath, MAIN_NAVIGATION } from '#lib/shared/config'
+  import {
+    CATALOG_NAVIGATION,
+    isActivePath,
+    MAIN_NAVIGATION,
+    navigationLabel,
+  } from '#lib/shared/config'
+  import { format, useDictionary, usePagePath } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
   import { Button, Drawer, Icon } from '#lib/shared/ui/kit'
 
@@ -14,6 +18,7 @@
   }
 
   const { nodes }: Props = $props()
+  const t = useDictionary()
 
   let open = $state(false)
   let heading = $state<HTMLElement | null>(null)
@@ -21,7 +26,7 @@
 
   const catalogNode = $derived<NavigationNode>({
     id: 'catalogue',
-    label: CATALOG_NAVIGATION.label,
+    label: navigationLabel(CATALOG_NAVIGATION, t),
     path: CATALOG_NAVIGATION.href,
     children: nodes,
   })
@@ -37,9 +42,10 @@
 
 <Drawer
   bind:open
-  title="Menu"
+  title={t.layout.menu}
+  closeLabel={t.layout.close}
   triggerClass="bui-button bui-button--nav bui-button--icon"
-  triggerLabel="Menu"
+  triggerLabel={t.layout.menu}
   triggerTestId="layout-mobile-menu-toggle"
   panelTestId="layout-mobile-menu"
 >
@@ -47,7 +53,7 @@
     <Icon name="menu" />
   {/snippet}
 
-  <nav aria-label="Menu mobile">
+  <nav aria-label={t.layout.mobileMenu}>
     {#if drill.current}
       {@const current = drill.current}
       <Button
@@ -57,7 +63,7 @@
         data-testid="layout-mobile-menu-back"
         onclick={drill.back}
       >
-        Retour à {drill.parentLabel ?? 'Menu'}
+        {format(t.layout.back, { parent: drill.parentLabel ?? t.layout.menu })}
       </Button>
       <h2 class="mb-2 text-title font-semibold" tabindex="-1" bind:this={heading}>
         {current.label}
@@ -65,7 +71,7 @@
       <ul class="flex flex-col">
         <li>
           <a href={resolveHref(current.path)} class="mobile-menu-item" onclick={close}>
-            Voir toute la catégorie
+            {t.layout.wholeCategory}
           </a>
         </li>
         {#each current.children as node (node.id)}
@@ -84,21 +90,21 @@
         {/each}
       </ul>
     {:else}
-      <h2 class="sr-only" tabindex="-1" bind:this={heading}>Navigation</h2>
+      <h2 class="sr-only" tabindex="-1" bind:this={heading}>{t.layout.navigation}</h2>
       <ul class="flex flex-col">
         {#each MAIN_NAVIGATION as item (item.href)}
           <li>
             <a
               href={resolveHref(item.href)}
               class="mobile-menu-item"
-              aria-current={isActivePath(page.url.pathname, item.href) ? 'page' : undefined}
-              onclick={close}>{item.label}</a
+              aria-current={isActivePath(usePagePath(), item.href) ? 'page' : undefined}
+              onclick={close}>{navigationLabel(item, t)}</a
             >
           </li>
         {/each}
         <li>
           <button type="button" class="mobile-menu-item" onclick={() => drill.open(catalogNode)}>
-            {CATALOG_NAVIGATION.label}
+            {navigationLabel(CATALOG_NAVIGATION, t)}
             <Icon name="chevron-right" />
           </button>
         </li>

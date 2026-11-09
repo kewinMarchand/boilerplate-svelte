@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { useMatomo } from '#lib/shared/observability'
 
   import Footer from './Footer.svelte'
@@ -20,10 +21,11 @@
   const { categoryMenu, identity, cartLink, children }: Props = $props()
 
   useMatomo()
+  const t = useDictionary()
 </script>
 
 <div class="flex min-h-screen flex-col">
-  <a href="#main" class="skip-link">Aller au contenu principal</a>
+  <a href="#main" class="skip-link">{t.layout.skipLink}</a>
   <Header {categoryMenu} {identity} {cartLink} />
   <main id="main" tabindex="-1" class="page-grid grow">
     {@render children()}

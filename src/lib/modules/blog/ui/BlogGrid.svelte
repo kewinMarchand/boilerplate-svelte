@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { Alert, Button, Icon, Skeleton } from '#lib/shared/ui/kit'
 
   import BlogCard from './BlogCard.svelte'
@@ -8,11 +9,11 @@
   interface Props {
     status: Article.Status
     articles: Article.Entity[] | undefined
-    errorMessage?: string | undefined
     onRetry: () => void
   }
 
-  const { status, articles, errorMessage, onRetry }: Props = $props()
+  const { status, articles, onRetry }: Props = $props()
+  const t = useDictionary()
 </script>
 
 {#if status === 'pending'}
@@ -20,7 +21,7 @@
     class="blog-grid"
     role="status"
     aria-busy="true"
-    aria-label="Chargement des articles"
+    aria-label={t.blog.loading}
     data-testid="home-blog-loading"
   >
     {#each [1, 2, 3] as key (key)}
@@ -29,15 +30,13 @@
   </div>
 {:else if status === 'error'}
   <div class="flex flex-col items-start gap-3">
-    <Alert variant="error" data-testid="home-blog-error">{errorMessage}</Alert>
+    <Alert variant="error" data-testid="home-blog-error">{t.blog.loadError}</Alert>
     <Button variant="outline" onclick={onRetry} data-testid="home-blog-retry"
-      ><Icon name="rotate-cw" />Réessayer
+      ><Icon name="rotate-cw" />{t.blog.retry}
     </Button>
   </div>
 {:else if !articles?.length}
-  <Alert variant="info" data-testid="home-blog-empty">
-    Aucun article publié pour l'instant. Revenez bientôt.
-  </Alert>
+  <Alert variant="info" data-testid="home-blog-empty">{t.blog.empty}</Alert>
 {:else}
   <div class="blog-grid">
     {#each articles as article, index (article.id)}

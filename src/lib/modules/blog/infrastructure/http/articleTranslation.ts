@@ -1,3 +1,5 @@
+import { articleHref } from '#lib/modules/blog/domain/article'
+
 import type { Article } from '#lib/modules/blog/domain/article'
 import type { components } from '#lib/shared/api/client'
 
@@ -29,6 +31,7 @@ export const toArticleDetail = (dto: ArticleDetailDto): Article.Detail => ({
   speaker: dto.speaker,
   metaTitle: dto.metaTitle,
   metaDescription: dto.metaDescription,
+  alternates: dto.alternates.map(({ locale, slug }) => ({ locale, path: articleHref(slug) })),
 })
 
 export const toSections = (dtos: ArticleTermDto[]): Article.Term[] => dtos.map(toTerm)

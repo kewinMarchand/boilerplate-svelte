@@ -6,10 +6,5 @@
 </script>
 
 <div aria-live="polite">
-  <TaskList
-    status={query.status}
-    tasks={query.data}
-    errorMessage={query.error?.message}
-    onRetry={() => void query.refetch()}
-  />
+  <TaskList status={query.status} tasks={query.data} onRetry={() => void query.refetch()} />
 </div>

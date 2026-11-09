@@ -1,10 +1,10 @@
 <script lang="ts">
+  import { plural, useDictionary } from '#lib/shared/i18n'
   import { Button, Chip, Select } from '#lib/shared/ui/kit'
 
   import { SORTS } from '../domain/catalog'
   import { PRICE_SORTS, queryEntries } from '../domain/catalogQuery'
   import { catalogHref } from './hooks/useCatalogNavigation.svelte'
-  import { SORT_LABELS } from './labels'
 
   import type { Catalog } from '../domain/catalog'
   import type { AppPath } from '#lib/shared/routing'
@@ -21,12 +21,13 @@
 
   const { path, query, total, salesEnabled, onSortChange, filterButton }: Props = $props()
 
+  const t = useDictionary()
   const sortId = $props.id()
   const keptFields = $derived(queryEntries(query, ['tri']))
   const sortOptions = $derived(
     SORTS.filter((sort) => salesEnabled || !PRICE_SORTS.includes(sort)).map((sort) => ({
       value: sort,
-      label: SORT_LABELS[sort],
+      label: t.catalog.sorts[sort],
     })),
   )
 
@@ -41,8 +42,7 @@
 <div class="catalog-toolbar" data-ui-chrome>
   {@render filterButton()}
   <p role="status" class="grow font-semibold" data-testid="catalog-results-count">
-    {total}
-    {total > 1 ? 'produits' : 'produit'}
+    {plural(t.catalog.productCount, total, t.language.tag)}
   </p>
   <form method="GET" class="flex items-end gap-2">
     {#each keptFields as [name, value], index (`${name}-${index}`)}
@@ -50,25 +50,25 @@
     {/each}
     <Select
       id={sortId}
-      label="Trier par"
+      label={t.catalog.sortBy}
       name="tri"
       options={sortOptions}
       value={query.sort}
       data-testid="catalog-sort"
       onchange={handleSortChange}
     />
-    <Button type="submit" variant="outline" class="js:hidden">Trier</Button>
+    <Button type="submit" variant="outline" class="js:hidden">{t.catalog.sort}</Button>
   </form>
-  <nav aria-label="Affichage" class="flex gap-1">
+  <nav aria-label={t.catalog.display} class="flex gap-1">
     <Chip
       href={catalogHref(path, { ...query, view: 'grille' })}
       aria-current={query.view === 'grille' ? 'page' : undefined}
-      data-testid="catalog-view-grid">Grille</Chip
+      data-testid="catalog-view-grid">{t.catalog.views.grille}</Chip
     >
     <Chip
       href={catalogHref(path, { ...query, view: 'liste' })}
       aria-current={query.view === 'liste' ? 'page' : undefined}
-      data-testid="catalog-view-list">Liste</Chip
+      data-testid="catalog-view-list">{t.catalog.views.liste}</Chip
     >
   </nav>
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useDictionary } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
 
   import type { Seo } from '#lib/shared/seo'
@@ -8,9 +9,10 @@
   }
 
   const { items }: Props = $props()
+  const t = useDictionary()
 </script>
 
-<nav class="bui-breadcrumb mb-4" aria-label="Fil d’Ariane" data-testid="layout-breadcrumb">
+<nav class="bui-breadcrumb mb-4" aria-label={t.layout.breadcrumb} data-testid="layout-breadcrumb">
   <ol class="bui-breadcrumb__list">
     {#each items as item, index (item.path)}
       <li class="bui-breadcrumb__item">

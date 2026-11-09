@@ -50,6 +50,7 @@ describe('toSiteIdentity', () => {
         defaultColorScheme: 'auto',
         theme: null,
         salesEnabled: true,
+        locales: ['fr'],
       }),
     ).toEqual({
       name: 'Boilerplate',
@@ -60,7 +61,25 @@ describe('toSiteIdentity', () => {
       defaultColorScheme: 'auto',
       theme: null,
       salesEnabled: true,
+      locales: ['fr'],
     })
+  })
+
+  it('lit les langues du site, le français seul quand l’API ne les donne pas', () => {
+    const dto = {
+      name: 'Oraki',
+      tagline: '',
+      logo: null,
+      shareImage: null,
+      icon: null,
+      defaultColorScheme: 'auto' as const,
+      theme: null,
+      salesEnabled: true,
+    }
+
+    expect(toSiteIdentity({ ...dto, locales: ['fr', 'en'] }).locales).toEqual(['fr', 'en'])
+    // Une API antérieure aux langues (fausses API des e2e) n'envoie pas `locales`
+    expect(toSiteIdentity(JSON.parse(JSON.stringify(dto))).locales).toEqual(['fr'])
   })
 
   it('traduit l’image de partage et les favicons', () => {
@@ -73,6 +92,7 @@ describe('toSiteIdentity', () => {
       defaultColorScheme: 'auto',
       theme: null,
       salesEnabled: true,
+      locales: ['fr'],
     })
 
     expect(identity.shareImage).toEqual(SHARE_IMAGE)
@@ -92,6 +112,7 @@ describe('toSiteIdentity', () => {
         defaultColorScheme: 'dark',
         theme: { light: TOKENS, dark },
         salesEnabled: true,
+        locales: ['fr'],
       }),
     ).toEqual({
       name: 'Oraki',
@@ -102,6 +123,7 @@ describe('toSiteIdentity', () => {
       defaultColorScheme: 'dark',
       theme: { light: TOKENS, dark },
       salesEnabled: true,
+      locales: ['fr'],
     })
   })
 
@@ -115,6 +137,7 @@ describe('toSiteIdentity', () => {
       defaultColorScheme: 'auto',
       theme: { light: { ...TOKENS, primary: 'red}</style>' }, dark: TOKENS },
       salesEnabled: true,
+      locales: ['fr'],
     })
 
     expect(identity.theme).toBeNull()
@@ -132,6 +155,7 @@ describe('toSiteIdentity', () => {
         defaultColorScheme: 'auto',
         theme: null,
         salesEnabled,
+        locales: ['fr'],
       })
 
       expect(identity.salesEnabled).toBe(salesEnabled)

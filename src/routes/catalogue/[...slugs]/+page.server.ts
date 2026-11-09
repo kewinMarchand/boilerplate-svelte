@@ -10,6 +10,7 @@ export const load: PageServerLoad = async ({ params, url, depends, locals }) => 
     params.slugs,
     url.searchParams,
     locals.siteIdentity.salesEnabled,
+    locals.locale,
   )
   if (page.status === 'not-found') error(404, 'Page introuvable')
   return page

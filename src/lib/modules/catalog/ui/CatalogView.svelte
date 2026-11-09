@@ -1,12 +1,18 @@
 <script lang="ts">
-  import { CATALOG_NAVIGATION } from '#lib/shared/config'
+  import { CATALOG_NAVIGATION, navigationLabel } from '#lib/shared/config'
+  import { format, useDictionary, useLocale } from '#lib/shared/i18n'
   import { resolveHref } from '#lib/shared/routing'
-  import { absoluteUrl } from '#lib/shared/seo'
+  import { localizedUrl } from '#lib/shared/seo'
   import { useIsDesktop } from '#lib/shared/ui/hooks'
   import { Button, Chip, Drawer, Icon, largestWebp } from '#lib/shared/ui/kit'
   import { PageHeader } from '#lib/shared/ui/layout'
 
-  import { clearFilters, countActiveFilters, isFiltered } from '../domain/catalogQuery'
+  import {
+    clearFilters,
+    countActiveFilters,
+    isFiltered,
+    serializeCatalogQuery,
+  } from '../domain/catalogQuery'
   import { CATALOG_ROOT_PATH, categoryTrail } from '../domain/categoryPath'
   import ActiveFilters from './ActiveFilters.svelte'
   import CatalogFilters from './CatalogFilters.svelte'
@@ -27,24 +33,29 @@
 
   const { query, result, salesEnabled }: Props = $props()
 
+  const t = useDictionary()
+  const locale = useLocale()
+  const catalogLabel = navigationLabel(CATALOG_NAVIGATION, t)
+
   const listing = $derived(result.status === 'success' ? result.listing : undefined)
   const chain = $derived(listing?.chain ?? [])
   const current = $derived(chain.at(-1))
   const path = $derived(current?.path ?? CATALOG_ROOT_PATH)
-  const title = $derived(current?.name ?? CATALOG_NAVIGATION.label)
+  const title = $derived(current?.name ?? catalogLabel)
   const parents = $derived<Seo.BreadcrumbItem[]>(
-    current
-      ? [{ label: CATALOG_NAVIGATION.label, path: CATALOG_ROOT_PATH }, ...categoryTrail(chain)]
-      : [],
+    current ? [{ label: catalogLabel, path: CATALOG_ROOT_PATH }, ...categoryTrail(chain)] : [],
   )
   const firstImage = $derived(listing?.products[0]?.image)
   const seo = $derived<Omit<Seo.Input, 'title' | 'description' | 'path' | 'breadcrumb'>>({
     noindex: isFiltered(query),
     canonicalPath: query.page >= 2 ? `${path}?page=${query.page}` : path,
-    prevPath: query.page > 1 ? catalogHref(path, { ...query, page: query.page - 1 }) : undefined,
+    prevPath:
+      query.page > 1
+        ? `${path}${serializeCatalogQuery({ ...query, page: query.page - 1 })}`
+        : undefined,
     nextPath:
       listing && query.page < listing.totalPages
-        ? catalogHref(path, { ...query, page: query.page + 1 })
+        ? `${path}${serializeCatalogQuery({ ...query, page: query.page + 1 })}`
         : undefined,
     image: firstImage
       ? {
@@ -62,7 +73,7 @@
           '@type': 'ListItem',
           position: (listing.page - 1) * listing.products.length + index + 1,
           name: product.name,
-          url: absoluteUrl(`${path}#${product.slug}`),
+          url: localizedUrl(`${path}#${product.slug}`, locale),
         })),
       },
     ],
@@ -79,12 +90,7 @@
   const activeCount = $derived(countActiveFilters(query))
 </script>
 
-<PageHeader
-  {title}
-  description={listing?.description ?? 'Catalogue de notre jardinerie tropicale.'}
-  {parents}
-  {seo}
-/>
+<PageHeader {title} description={listing?.description ?? t.catalog.description} {parents} {seo} />
 
 {#snippet clearAction()}
   <Button
@@ -92,12 +98,12 @@
     variant="outline"
     data-testid="catalog-clear-filters"
   >
-    Tout effacer
+    {t.catalog.clearFilters}
   </Button>
 {/snippet}
 
 {#if listing && listing.children.length > 0}
-  <nav aria-label="Sous-catégories" class="mb-6">
+  <nav aria-label={t.catalog.subcategories} class="mb-6">
     <ul class="bui-chip-list">
       {#each listing.children as child (child.slug)}
         <li><Chip href={resolveHref(child.path)}>{child.name} ({child.count})</Chip></li>
@@ -109,7 +115,9 @@
 <div class="catalog-layout">
   {#if listing && isDesktop.current}
     <aside aria-labelledby="catalog-filters-title" class="catalog-aside">
-      <h2 id="catalog-filters-title" class="mb-4 text-title font-semibold">Filtres</h2>
+      <h2 id="catalog-filters-title" class="mb-4 text-title font-semibold">
+        {t.catalog.filters}
+      </h2>
       <CatalogFilters {query} {listing} {salesEnabled} onsubmit={navigation.submitForm} />
     </aside>
   {/if}
@@ -119,18 +127,19 @@
       {#if listing}
         <Drawer
           bind:open={filtersOpen}
-          title="Filtres"
+          title={t.catalog.filters}
+          closeLabel={t.layout.close}
           side="start"
           triggerClass="bui-button bui-button--outline hidden js:max-lg:inline-flex"
           triggerTestId="catalog-filters-open"
         >
           {#snippet trigger()}
             <Icon name="sliders-horizontal" />
-            Filtrer{activeCount > 0 ? ` (${activeCount})` : ''}
+            {t.catalog.filterButton}{activeCount > 0 ? ` (${activeCount})` : ''}
           {/snippet}
           <CatalogFilters {query} {listing} {salesEnabled} onsubmit={navigation.submitForm} />
           <Button class="mt-6 w-full" onclick={() => (filtersOpen = false)}>
-            Voir les {listing.total} produits
+            {format(t.catalog.showProducts, { total: listing.total })}
           </Button>
         </Drawer>
       {/if}
@@ -155,7 +164,6 @@
       products={listing?.products ?? []}
       view={query.view}
       {salesEnabled}
-      errorMessage={result.status === 'error' ? result.message : undefined}
       onRetry={navigation.retry}
       {clearAction}
     />
