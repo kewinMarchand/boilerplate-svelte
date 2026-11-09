@@ -65,6 +65,7 @@ Variables d'environnement (`.env`, déclarées et validées dans `src/env.ts`). 
 | `PUBLIC_GLITCHTIP_ENVIRONMENT`               | Environnement déclaré à GlitchTip (défaut : `development` ou `production`)                                                                             |
 | `PUBLIC_MATOMO_URL`, `PUBLIC_MATOMO_SITE_ID` | Mesure d'audience Matomo sans cookie. Vides : aucun script, aucune requête, pas de paragraphe sur la page Données personnelles                         |
 | `API_URL`                                    | Origine de l'API : `http://localhost:8090` (API Platform, défaut) ou `http://localhost:8091` (Hono), même contrat. Lue par le serveur et le navigateur |
+| `API_SCENARIO`                               | Scénario de l'API (`X-Scenario`) pour tous les appels, serveur et navigateur : `bilingual` sert le site bilingue de test. Vide en production           |
 | `API_SCHEMA_URL`                             | Schéma OpenAPI de l'API consommée, lu par `make api-types`                                                                                             |
 
 ## Démarrer un projet à partir de ce dépôt
@@ -112,6 +113,7 @@ git cherry-pick <sha>
 | Nom du paquet              | `package.json` (`name`, `description`)                                                                                                                                                                                                                            |
 | Identité et config du site | `src/lib/shared/config/site.ts` (nom, description, éditeur pour le SEO, audit d'accessibilité pour le lien du pied de page), `.env.example` (`PUBLIC_SITE_URL`), `static/manifest.webmanifest`, `src/app.html` (`theme-color`), `LICENSE`                         |
 | Navigation                 | `src/lib/shared/config/navigation.ts` (menu, pied de page, sitemap, plan du site)                                                                                                                                                                                 |
+| Libellés de l'interface    | `src/lib/shared/i18n/dictionaries/fr.ts` et `en.ts` (mêmes clés, vérifiées par le type et un test)                                                                                                                                                                |
 | Couleurs, police, tokens   | `src/lib/shared/theme/theme.css`                                                                                                                                                                                                                                  |
 | Ports                      | développement : `package.json` (script `dev`) et `vite.config.ts` (5173). Tests : `playwright.config.ts` (3120), `tests/e2e/production.e2e.ts` (3121). Lighthouse : `.lighthouserc.json` (3220). Production : `Dockerfile`, `compose.yaml`, `.env.example` (3000) |
 | Logo et favicons           | `static/logo-mark.svg`, `static/favicon.svg`, `static/favicon.ico`, `static/apple-touch-icon.png`, `static/icon-192.png`, `static/icon-512.png`, `static/og-image.jpg`                                                                                            |
@@ -223,8 +225,19 @@ Le pattern est dans `src/lib/modules/task/` :
 
 ### Ajouter un champ de formulaire
 
-1. Ajouter le champ et son message d'erreur dans `src/lib/modules/contact/domain/contactSchema.ts`. Le type du formulaire en découle.
-2. Ajouter le `TextField` dans `ContactForm.svelte` avec `errors={$errors.champ}` et `bind:value={$form.champ}`. Le message est relié au champ par `aria-describedby`.
+1. Ajouter le champ dans `src/lib/modules/contact/domain/contactSchema.ts`, son message d'erreur dans `ValidationMessages` et dans `contact.validation` des deux dictionnaires (`src/lib/shared/i18n/dictionaries/`). Le type du formulaire en découle.
+2. Ajouter le `TextField` dans `ContactForm.svelte`, libellé tiré du dictionnaire, avec `errors={$errors.champ}` et `bind:value={$form.champ}`. Le message est relié au champ par `aria-describedby`.
+
+### Langues du site
+
+Un site n'a qu'une langue, le français, tant que l'identité du site (`GET /api/site-identity`, administrée dans l'API) n'en active pas d'autre : routes, HTML et appels à l'API restent alors ceux d'un site monolingue. À plus d'une langue (la première est la langue par défaut) :
+
+- la langue par défaut n'a pas de préfixe, les autres en ont un (`/en/produit/swiss-cheese-plant`) ; un préfixe qui n'est pas une langue activée répond 404, sans redirection selon le navigateur ;
+- l'en-tête montre un sélecteur de langue, qui mène à la même page dans l'autre langue, ou à son accueil si la page n'y existe pas ;
+- chaque lecture de l'API passe `locale=<langue de la page>`, le contact envoie sa langue en `Accept-Language` ;
+- `<html lang>`, canonique, `og:locale`, `hreflang` (et `x-default`), `inLanguage` et sitemap suivent la langue de la page.
+
+Libellés : une clé par texte dans `src/lib/shared/i18n/dictionaries/fr.ts` et `en.ts` (`{nom}` remplacé par `format`, pluriels par `plural`), lue dans un composant par `const t = useDictionary()`. Un lien interne passe par `resolveHref`, qui ajoute le préfixe de la page. Une langue activée sans dictionnaire prend les libellés de la langue par défaut. Pour voir le site bilingue des fixtures : `API_SCENARIO=bilingual` dans `.env`, puis `make build start`.
 
 ### Composants de boilerplates-ui
 
@@ -251,7 +264,7 @@ Ajouter son nom Lucide (lucide.dev/icons) dans `icons.json`, lancer `make icons`
 ## Tests
 
 - **Unitaires et fonctionnels** : fichiers `*.test.ts` à côté du code testé.
-- **End-to-end** : Playwright sert le build de production sur le port 3120, routes de développement activées. Les éléments sont ciblés par `data-testid`, préfixé par le domaine (`catalog-sort`, `contact-submit`). Chaque rendu conditionnel est testé présent et absent. Les captures de mise en page sont écrites dans `screenshots/`.
+- **End-to-end** : Playwright sert le build de production sur le port 3120, routes de développement activées. Le site bilingue (`tests/e2e/bilingue.e2e.ts`) est le même build, servi avec `API_SCENARIO=bilingual` sur les ports 3128 et 3129. Les éléments sont ciblés par `data-testid`, préfixé par le domaine (`catalog-sort`, `contact-submit`). Chaque rendu conditionnel est testé présent et absent. Les captures de mise en page sont écrites dans `screenshots/`.
 - **Accessibilité** : `tests/a11y/` passe axe-core sur chaque route, la 404, la 500, la charte et le menu ouvert, en mode standard et renforcé. Axe ne couvre qu'une partie du RGAA, un audit manuel reste nécessaire.
 
 ## Intégration continue
