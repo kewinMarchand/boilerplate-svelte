@@ -119,8 +119,8 @@ test.describe('Identité du site, avec logo et couleurs (API factice)', () => {
 
   test.beforeAll(async () => {
     const offset = test.info().project.name === 'mobile' ? 2 : 0
-    const appPort = 3124 + offset
-    const apiPort = 3125 + offset
+    const appPort = 4048 + offset
+    const apiPort = 4049 + offset
     appUrl = `http://localhost:${appPort}`
     api = startFakeApi(apiPort)
     app = spawn('node', ['build'], {

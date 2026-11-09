@@ -108,8 +108,8 @@ test.describe('Contenus saisis dans l’admin (API factice)', () => {
 
   test.beforeAll(async () => {
     const offset = test.info().project.name === 'mobile' ? 2 : 0
-    const appPort = 3136 + offset
-    const apiPort = 3137 + offset
+    const appPort = 4052 + offset
+    const apiPort = 4053 + offset
     appUrl = `http://localhost:${appPort}`
     apiOrigin = `http://localhost:${apiPort}`
     api = startFakeApi(apiPort)

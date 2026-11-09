@@ -151,7 +151,7 @@ test.describe('Site bilingue fr, en (API_SCENARIO=bilingual)', () => {
 
   // Variable lue à l'exécution : le build de la suite principale, servi sur son propre port
   test.beforeAll(async () => {
-    const port = test.info().project.name === 'mobile' ? 3129 : 3128
+    const port = test.info().project.name === 'mobile' ? 4043 : 4042
     appUrl = `http://localhost:${port}`
     app = spawn('node', ['build'], {
       env: {
@@ -171,7 +171,7 @@ test.describe('Site bilingue fr, en (API_SCENARIO=bilingual)', () => {
     app?.kill()
   })
 
-  // Les deux API autorisent l'origine de ce serveur (3128, mobile 3129) : le navigateur les appelle directement.
+  // Les deux API autorisent l'origine de ce serveur (4042, mobile 4043) : le navigateur les appelle directement.
   // L'envoi du contact est rejoué avec l'origine du build (protection CSRF, voir vente.e2e.ts).
   const replayContactWithBuildOrigin = (context: BrowserContext) =>
     context.route(`${appUrl}/en/contact**`, async (route) => {
@@ -477,8 +477,8 @@ test.describe('Site bilingue fr, en (API_SCENARIO=bilingual)', () => {
   })
 
   test('la page de maintenance suit la langue de l’adresse', async ({ page }) => {
-    // Ports libres dans tous les boilerplates (tableaux des CLAUDE.md)
-    const port = test.info().project.name === 'mobile' ? 3132 : 3131
+    // Bloc du dépôt, section 7 de la spec commune
+    const port = test.info().project.name === 'mobile' ? 4045 : 4044
     const url = `http://localhost:${port}`
     const server = spawn('node', ['build'], {
       env: {

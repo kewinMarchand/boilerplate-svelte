@@ -39,7 +39,7 @@ test.describe('Fil d’Ariane', () => {
     expect(items).toHaveLength(4)
     expect(items.map((item) => item.position)).toEqual([1, 2, 3, 4])
     expect(items[3]?.item).toMatch(
-      /^http:\/\/localhost:3120\/catalogue\/plantes-interieur\/feuillages$/,
+      /^http:\/\/localhost:4040\/catalogue\/plantes-interieur\/feuillages$/,
     )
   })
 
