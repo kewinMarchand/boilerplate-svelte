@@ -478,7 +478,7 @@ test.describe('Site bilingue fr, en (API_SCENARIO=bilingual)', () => {
 
   test('la page de maintenance suit la langue de l’adresse', async ({ page }) => {
     // Bloc du dépôt, section 7 de la spec commune
-    const port = test.info().project.name === 'mobile' ? 4045 : 4044
+    const port = test.info().project.name === 'mobile' ? 4056 : 4044
     const url = `http://localhost:${port}`
     const server = spawn('node', ['build'], {
       env: {
