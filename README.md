@@ -59,7 +59,7 @@ Variables d'environnement (`.env`, déclarées et validées dans `src/env.ts`). 
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `PUBLIC_SITE_URL`                            | URL publique, utilisée pour les URL canoniques, Open Graph, le JSON-LD et le sitemap                                                                   |
 | `ORIGIN`                                     | Origine servie par `make start`, figée par `make build` (protection CSRF des formulaires, voir `CLAUDE.md`)                                            |
-| `MAINTENANCE`                                | `1` : toutes les pages répondent 503 avec la page de maintenance statique                                                                              |
+| `MAINTENANCE`                                | `1` : toutes les pages répondent 503 avec la page de maintenance statique, dans la langue de l'adresse                                                 |
 | `DEV_ROUTES`                                 | `1` : expose `/charte-graphique` et `/_erreur-test` hors du serveur de développement                                                                   |
 | `GLITCHTIP_DSN`, `PUBLIC_GLITCHTIP_DSN`      | Suivi des erreurs GlitchTip, côté serveur et navigateur. Vides : aucun SDK chargé, aucune requête                                                      |
 | `PUBLIC_GLITCHTIP_ENVIRONMENT`               | Environnement déclaré à GlitchTip (défaut : `development` ou `production`)                                                                             |

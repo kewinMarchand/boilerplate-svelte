@@ -1,6 +1,6 @@
 import { MAINTENANCE } from '$app/env/private'
 
-import { localeContext, localePrefix } from '#lib/shared/i18n'
+import { FALLBACK_LOCALE, localeContext, localePrefix } from '#lib/shared/i18n'
 import {
   initServerErrorReporting,
   reportServerError,
@@ -15,9 +15,10 @@ import { COLOR_SCHEME_SCRIPT } from '#lib/shared/ui/color-scheme'
 
 import { loadSiteIdentity } from '#lib/modules/content/index.server'
 
-import { MAINTENANCE_HTML, MAINTENANCE_RETRY_AFTER_SECONDS } from '#lib/views/errors'
+import { MAINTENANCE_RETRY_AFTER_SECONDS, maintenancePage } from '#lib/views/errors/index.server'
 
 import type { Handle, HandleServerError, ServerInit } from '@sveltejs/kit/hooks'
+import type { LocaleContext } from '#lib/shared/i18n'
 
 export const init: ServerInit = () => {
   announceStartup()
@@ -27,9 +28,28 @@ export const init: ServerInit = () => {
 // Mode renforcé et thème posés avant le premier rendu, dans une seule balise (sections 4 et 20 de la spec commune).
 const BOOT_SCRIPT = `<script>${A11Y_MODE_SCRIPT}${COLOR_SCHEME_SCRIPT}</script>`
 
+/**
+ * Préfixe de langue sous lequel la page est servie, lu par `reroute` dans le navigateur : sans lui, une 404
+ * sous `/fr/...` (langue par défaut) serait prise à l'hydratation pour la route sans préfixe. Absent dans la
+ * langue par défaut, donc sur tout site monolingue.
+ */
+const localePrefixAttribute = ({ locale, defaultLocale }: LocaleContext) =>
+  locale === defaultLocale ? '' : ` data-locale-prefix="${locale}"`
+
+const MAINTENANCE_LOCALES_TIMEOUT_MS = 2000
+
+/** Langues du site pour la page de maintenance, `fr` si l'API, parfois arrêtée elle aussi, ne répond pas à temps. */
+const maintenanceLocales = () =>
+  Promise.race([
+    loadSiteIdentity().then(({ locales }) => locales),
+    new Promise<string[]>((resolve) =>
+      setTimeout(resolve, MAINTENANCE_LOCALES_TIMEOUT_MS, [FALLBACK_LOCALE]),
+    ),
+  ])
+
 export const handle: Handle = async ({ event, resolve }) => {
   if (MAINTENANCE === '1') {
-    return new Response(MAINTENANCE_HTML, {
+    return new Response(maintenancePage(event.url.pathname, await maintenanceLocales()), {
       status: 503,
       headers: {
         'content-type': 'text/html; charset=utf-8',
@@ -50,6 +70,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     transformPageChunk: ({ html }) =>
       html
         .replace('%lang%', event.locals.locale.locale)
+        .replace(' %locale.prefix%', localePrefixAttribute(event.locals.locale))
         .replace('%color.scheme%', identity.defaultColorScheme)
         .replace('%site.icons%', buildIconLinks(identity.icon))
         .replace(
