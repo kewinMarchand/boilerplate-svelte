@@ -26,8 +26,8 @@ up: ## Lance le serveur de développement en conteneur (http://localhost:5173)
 build: ## Build de production
 	$(RUN) yarn build
 
-start: ## Sert le build de production (port 3000)
-	$(RUN) yarn start
+start: ## Sert le build de production (port 4057)
+	$(RUN) env PORT=4057 yarn start
 
 icons: ## Génère static/icons.svg et le type des noms depuis icons.json (noms Lucide)
 	$(RUN) node tools/icons.ts
