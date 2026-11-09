@@ -30,13 +30,16 @@
   </div>
 {:else if status === 'error'}
   <div class="flex flex-col items-start gap-3">
-    <Alert variant="error" data-testid="home-blog-error">{t.blog.loadError}</Alert>
+    <Alert variant="error" prefix={t.ui.alert.error} data-testid="home-blog-error"
+      >{t.blog.loadError}</Alert
+    >
     <Button variant="outline" onclick={onRetry} data-testid="home-blog-retry"
       ><Icon name="rotate-cw" />{t.blog.retry}
     </Button>
   </div>
 {:else if !articles?.length}
-  <Alert variant="info" data-testid="home-blog-empty">{t.blog.empty}</Alert>
+  <Alert variant="info" prefix={t.ui.alert.info} data-testid="home-blog-empty">{t.blog.empty}</Alert
+  >
 {:else}
   <div class="blog-grid">
     {#each articles as article, index (article.id)}

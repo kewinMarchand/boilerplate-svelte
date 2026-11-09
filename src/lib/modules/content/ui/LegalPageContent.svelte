@@ -20,7 +20,9 @@
 
 {#if legalPage.status === 'error'}
   <PageHeader title={fallbackTitle} {description} />
-  <Alert variant="error" data-testid="legal-error">{t.legal.loadError}</Alert>
+  <Alert variant="error" prefix={t.ui.alert.error} data-testid="legal-error"
+    >{t.legal.loadError}</Alert
+  >
 {:else}
   <PageHeader title={legalPage.page.title} {description} />
   <div class="prose-legal">

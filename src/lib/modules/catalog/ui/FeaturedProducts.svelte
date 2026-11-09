@@ -31,7 +31,9 @@
 </script>
 
 {#if featured.status === 'error'}
-  <Alert variant="error" data-testid="home-carousel-error">{t.catalog.featuredError}</Alert>
+  <Alert variant="error" prefix={t.ui.alert.error} data-testid="home-carousel-error"
+    >{t.catalog.featuredError}</Alert
+  >
 {:else if slides.length}
   <section aria-labelledby={titleId} data-testid="home-carousel">
     <h2 id={titleId} class="section-title">{t.catalog.featured}</h2>

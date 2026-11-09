@@ -63,7 +63,9 @@
     parents={PARENTS}
     {seo}
   />
-  <Alert variant="error" data-testid="article-error">{t.blog.articleError}</Alert>
+  <Alert variant="error" prefix={t.ui.alert.error} data-testid="article-error"
+    >{t.blog.articleError}</Alert
+  >
 {:else}
   {@const {
     title,

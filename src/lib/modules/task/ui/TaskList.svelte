@@ -28,13 +28,15 @@
   </div>
 {:else if status === 'error'}
   <div class="flex flex-col items-start gap-3">
-    <Alert variant="error" data-testid="tasks-error">{t.tasks.loadError}</Alert>
+    <Alert variant="error" prefix={t.ui.alert.error} data-testid="tasks-error"
+      >{t.tasks.loadError}</Alert
+    >
     <Button variant="outline" onclick={onRetry} data-testid="tasks-retry"
       ><Icon name="rotate-cw" />{t.tasks.retry}
     </Button>
   </div>
 {:else if !tasks?.length}
-  <Alert variant="info" data-testid="tasks-empty">{t.tasks.empty}</Alert>
+  <Alert variant="info" prefix={t.ui.alert.info} data-testid="tasks-empty">{t.tasks.empty}</Alert>
 {:else}
   <ul class="flex flex-col" data-testid="tasks-list">
     {#each tasks as task (task.id)}

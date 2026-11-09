@@ -75,13 +75,15 @@
     </div>
   {:else if blog.status === 'error'}
     <div class="flex flex-col items-start gap-3">
-      <Alert variant="error" data-testid="blog-error">{t.blog.loadError}</Alert>
+      <Alert variant="error" prefix={t.ui.alert.error} data-testid="blog-error"
+        >{t.blog.loadError}</Alert
+      >
       <Button variant="outline" onclick={() => void blogRetry.retry()} data-testid="blog-retry"
         ><Icon name="rotate-cw" />{t.blog.retry}
       </Button>
     </div>
   {:else if blog.articles.length === 0}
-    <Alert variant="info" data-testid="blog-empty">{t.blog.empty}</Alert>
+    <Alert variant="info" prefix={t.ui.alert.info} data-testid="blog-empty">{t.blog.empty}</Alert>
   {:else}
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-testid="blog-list">
       {#each blog.articles as article (article.id)}

@@ -28,6 +28,7 @@
     label={t.contact.name}
     autocomplete="name"
     required
+    requiredLabel={t.ui.required}
     errors={$errors.name}
     data-testid="contact-name"
     bind:value={$form.name}
@@ -38,6 +39,7 @@
     type="email"
     autocomplete="email"
     required
+    requiredLabel={t.ui.required}
     errors={$errors.email}
     data-testid="contact-email"
     bind:value={$form.email}
@@ -47,22 +49,31 @@
     label={t.contact.message}
     multiline
     required
+    requiredLabel={t.ui.required}
     errors={$errors.message}
     data-testid="contact-message"
     bind:value={$form.message}
   />
-  <Button type="submit" icon="mail" loading={$submitting} data-testid="contact-submit">
+  <Button
+    type="submit"
+    icon="mail"
+    loading={$submitting}
+    loadingLabel={t.ui.loading}
+    data-testid="contact-submit"
+  >
     {t.contact.send}
   </Button>
   <div aria-live="polite">
     {#if $message?.status === 'success'}
-      <Alert variant="success" data-testid="contact-success">
+      <Alert variant="success" prefix={t.ui.alert.success} data-testid="contact-success">
         {product ? t.contact.inquirySent : t.contact.sent}
       </Alert>
     {:else if $errors.product}
-      <Alert variant="error">{$errors.product[0]}</Alert>
+      <Alert variant="error" prefix={t.ui.alert.error}>{$errors.product[0]}</Alert>
     {:else if $message?.status === 'error'}
-      <Alert variant="error" data-testid="contact-error">{t.contact.sendError}</Alert>
+      <Alert variant="error" prefix={t.ui.alert.error} data-testid="contact-error"
+        >{t.contact.sendError}</Alert
+      >
     {/if}
   </div>
 </form>

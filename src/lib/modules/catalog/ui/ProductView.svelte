@@ -103,7 +103,9 @@
 
 {#if product.status === 'error'}
   <PageHeader title={t.product.fallbackTitle} {description} parents={[CATALOG]} {seo} />
-  <Alert variant="error" data-testid="product-error">{t.product.loadError}</Alert>
+  <Alert variant="error" prefix={t.ui.alert.error} data-testid="product-error"
+    >{t.product.loadError}</Alert
+  >
 {:else if detail}
   <article data-testid="product-page">
     <PageHeader title={detail.name} {description} {parents} {seo} titleTestId="product-title" />
